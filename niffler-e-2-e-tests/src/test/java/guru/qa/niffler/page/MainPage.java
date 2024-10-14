@@ -10,6 +10,8 @@ import static com.codeborne.selenide.Selenide.$;
 public class MainPage {
   private final ElementsCollection tableRows = $("#spendings tbody").$$("tr");
   private final SelenideElement header = $("div#spendings h2");
+  private final SelenideElement profileIcon = $(".MuiAvatar-root");
+  private final SelenideElement profilePageLink = $("a[href='/profile']");
 
   public EditSpendingPage editSpending(String spendingDescription) {
     tableRows.find(text(spendingDescription)).$$("td").get(5).click();
@@ -21,6 +23,17 @@ public class MainPage {
   }
 
   public void checkThatHeaderContainsText(String header){
+
     this.header.shouldHave(text(header)).shouldBe(visible);
+  }
+
+  public MainPage clickProfileAvatar(){
+     profileIcon.click();
+     return this;
+  }
+
+  public ProfilePage clickProfilePageLink(){
+    profilePageLink.click();
+    return new ProfilePage();
   }
 }

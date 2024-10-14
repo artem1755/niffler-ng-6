@@ -1,12 +1,14 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.BrowserExtension;
 import guru.qa.niffler.jupiter.Spending;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.page.MainPage;
+import guru.qa.niffler.page.ProfilePage;
 import guru.qa.niffler.page.RegisterPage;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -83,6 +85,35 @@ public class SpendingWebTest {
             .login("user11", "password");
 
     new LoginPage().checkIsStillOnLoginPage();
+  }
+
+
+  @Test
+  void archivedCategoryShouldPresentInCategoriesList(){
+    Selenide.open(CFG.frontUrl(), LoginPage.class)
+            .login("artem", "11111");
+
+    new MainPage()
+            .clickProfileAvatar()
+            .clickProfilePageLink();
+
+    new ProfilePage()
+            .clickArchivedBtn("newcategory")
+            .clickArchivedBtnConfirm()
+            .checkThatSuccessMessageBlockHasText("Category newcategory is archived")
+            .clickShowArchivedCheckbox()
+            .checkThatCategoryIsInTheLis("newcategory");
+  }
+
+  @Test
+  void activeCategoryShouldPresentInCategoriesList(){
+    Selenide.open(CFG.frontUrl(), LoginPage.class)
+            .login("artem", "11111");
+
+    new MainPage()
+            .clickProfileAvatar()
+            .clickProfilePageLink();
+    new ProfilePage().checkThatCategoryIsInTheLis("newcategory");
   }
 
 }
