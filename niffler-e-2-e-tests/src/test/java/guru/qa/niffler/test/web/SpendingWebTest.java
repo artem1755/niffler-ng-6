@@ -2,9 +2,12 @@ package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
+import com.github.javafaker.Faker;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.BrowserExtension;
+import guru.qa.niffler.jupiter.Category;
 import guru.qa.niffler.jupiter.Spending;
+import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.page.MainPage;
@@ -18,6 +21,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 public class SpendingWebTest {
 
   private static final Config CFG = Config.getInstance();
+  Faker faker = new Faker();
+
+
 
   @Spending(
       username = "duck",
@@ -44,7 +50,7 @@ public class SpendingWebTest {
 
     Selenide.open(CFG.frontUrl(), LoginPage.class)
             .clickCreateNewAccBtn()
-            .register("person123", "person1","person1")
+            .register("user_"+faker.artist().name(), "qwerty","qwerty")
             .checkThatParagrapthContainsSuccessMessage(successMessage);
   }
 
@@ -63,10 +69,9 @@ public class SpendingWebTest {
   void shouldShowErrorIfPasswordAndConfirmPasswordAreNotEqual(){
     final String errorMassage = String.format("Passwords should be equal");
 
-
     Selenide.open(CFG.frontUrl(), LoginPage.class)
             .clickCreateNewAccBtn()
-            .register("username", "person1","person12")
+            .register("user_"+faker.artist().name(), "qwerty","qwertyy")
             .checkThatFormContainsErrorMessage(errorMassage);
   }
 
@@ -88,32 +93,47 @@ public class SpendingWebTest {
   }
 
 
+  @Category(
+          username = "duck",
+          archived = false
+  )
   @Test
-  void archivedCategoryShouldPresentInCategoriesList(){
+  void archivedCategoryShouldPresentInCategoriesList(CategoryJson category){
     Selenide.open(CFG.frontUrl(), LoginPage.class)
-            .login("artem", "11111");
+            .login("duck", "12345");
 
     new MainPage()
             .clickProfileAvatar()
-            .clickProfilePageLink();
-
-    new ProfilePage()
-            .clickArchivedBtn("newcategory")
+            .clickProfilePageLink()
+            .searchCategoryBlock(category.name())
+            .clickArchivedBtn()
             .clickArchivedBtnConfirm()
-            .checkThatSuccessMessageBlockHasText("Category newcategory is archived")
+            .checkThatSuccessMessageBlockHasText("Category " + category.name() +" is archived")
             .clickShowArchivedCheckbox()
-            .checkThatCategoryIsInTheLis("newcategory");
+            .checkThatCategoryIsInTheList(category.name());
   }
 
+
+  @Category(
+          username = "duck",
+          archived = true
+  )
   @Test
-  void activeCategoryShouldPresentInCategoriesList(){
+  void activeCategoryShouldPresentInCategoriesList(CategoryJson category){
     Selenide.open(CFG.frontUrl(), LoginPage.class)
-            .login("artem", "11111");
+            .login("duck", "12345");
 
     new MainPage()
             .clickProfileAvatar()
-            .clickProfilePageLink();
-    new ProfilePage().checkThatCategoryIsInTheLis("newcategory");
+            .clickProfilePageLink()
+            .clickShowArchivedCheckbox()
+            .searchCategoryBlock(category.name())
+            .clickUnarchivedBtn()
+            .clickUnarchivedBtnConfirm()
+            .checkThatSuccessMessageBlockHasText("Category " + category.name() +" is unarchived")
+            .clickShowArchivedCheckbox()
+            .checkThatCategoryIsInTheList(category.name());
+
   }
 
 }

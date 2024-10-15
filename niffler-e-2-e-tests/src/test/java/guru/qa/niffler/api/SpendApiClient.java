@@ -5,11 +5,16 @@ import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
 import lombok.SneakyThrows;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+
+import static org.apache.hc.core5.http.HttpStatus.SC_OK;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SpendApiClient {
 
@@ -20,60 +25,85 @@ public class SpendApiClient {
 
   private final SpendApi spendApi = retrofit.create(SpendApi.class);
 
-  @SneakyThrows
   public SpendJson createSpend(SpendJson spend) {
-    return spendApi.addSpend(spend)
-        .execute()
-        .body();
+      try {
+          return spendApi.addSpend(spend)
+              .execute()
+              .body();
+      } catch (IOException e) {
+          throw new RuntimeException(e);
+      }
   }
 
-  @SneakyThrows
   public SpendJson editSpend(SpendJson spend) {
-    return spendApi.editSpend(spend)
-            .execute()
-            .body();
+      try {
+          return spendApi.editSpend(spend)
+                  .execute()
+                  .body();
+      } catch (IOException e) {
+          throw new RuntimeException(e);
+      }
   }
 
-  @SneakyThrows
   public void removeSpend(String username, List<String> ids) {
-     spendApi.removeSpend(username,ids)
-            .execute()
-            .body();
+      try {
+          spendApi.removeSpend(username,ids)
+                 .execute()
+                 .body();
+      } catch (IOException e) {
+          throw new RuntimeException(e);
+      }
   }
 
-  @SneakyThrows
   public SpendJson getSpend(String id, String username) {
-    return spendApi.getSpend(id ,username)
-            .execute()
-            .body();
+      try {
+          return spendApi.getSpend(id ,username)
+                  .execute()
+                  .body();
+      } catch (IOException e) {
+          throw new RuntimeException(e);
+      }
   }
 
-  @SneakyThrows
   public List<SpendJson> getAllSpends(String username, CurrencyValues filterCurrency, Date from, Date to){
-    return spendApi.getAllSpends(username ,filterCurrency, from, to)
-            .execute()
-            .body();
+      try {
+          return spendApi.getAllSpends(username ,filterCurrency, from, to)
+                  .execute()
+                  .body();
+      } catch (IOException e) {
+          throw new RuntimeException(e);
+      }
   }
 
-  @SneakyThrows
   public CategoryJson createCategory(CategoryJson category) {
-    return spendApi.addCategory(category)
-            .execute()
-            .body();
+      try {
+          return spendApi.addCategory(category)
+                  .execute()
+                  .body();
+      } catch (IOException e) {
+          throw new RuntimeException(e);
+      }
   }
 
-  @SneakyThrows
+
   public CategoryJson editCategory(CategoryJson category) {
-    return spendApi.editCategory(category)
-            .execute()
-            .body();
+      try {
+          return spendApi.editCategory(category)
+                  .execute()
+                  .body();
+      } catch (IOException e) {
+          throw new RuntimeException(e);
+      }
   }
 
-  @SneakyThrows
   public List<CategoryJson> getAllCategories(String username, Boolean excludeArchived){
-    return spendApi.getAllCategories(username,excludeArchived)
-            .execute()
-            .body();
+      try {
+          return spendApi.getAllCategories(username,excludeArchived)
+                  .execute()
+                  .body();
+      } catch (IOException e) {
+          throw new RuntimeException(e);
+      }
   }
 
 }
