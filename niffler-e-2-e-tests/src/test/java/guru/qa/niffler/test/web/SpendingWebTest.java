@@ -1,19 +1,16 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.SelenideElement;
 import com.github.javafaker.Faker;
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.jupiter.BrowserExtension;
-import guru.qa.niffler.jupiter.Category;
-import guru.qa.niffler.jupiter.Spending;
+import guru.qa.niffler.jupiter.annotation.DisabledByIssue;
+import guru.qa.niffler.jupiter.extension.BrowserExtension;
+import guru.qa.niffler.jupiter.annotation.Category;
+import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.page.MainPage;
-import guru.qa.niffler.page.ProfilePage;
-import guru.qa.niffler.page.RegisterPage;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -114,6 +111,8 @@ public class SpendingWebTest {
   }
 
 
+
+//  @DisabledByIssue("2")
   @Category(
           username = "duck",
           archived = true
@@ -133,7 +132,6 @@ public class SpendingWebTest {
             .checkThatSuccessMessageBlockHasText("Category " + category.name() +" is unarchived")
             .clickShowArchivedCheckbox()
             .checkThatCategoryIsInTheList(category.name());
-
   }
 
 }
