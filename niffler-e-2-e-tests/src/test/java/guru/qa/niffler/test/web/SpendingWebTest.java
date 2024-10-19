@@ -112,7 +112,6 @@ public class SpendingWebTest {
 
 
 
-//  @DisabledByIssue("2")
   @Category(
           username = "duck",
           archived = true
