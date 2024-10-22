@@ -11,6 +11,8 @@ public class MainPage {
   private final ElementsCollection tableRows = $("#spendings tbody").$$("tr");
   private final SelenideElement header = $("div#spendings h2");
   private final SelenideElement profileIcon = $(".MuiAvatar-root");
+  private final SelenideElement myfriendsLink = $("a.nav-link[href='/people/friends']");
+  private final SelenideElement allPeopleLink = $("a.nav-link[href='/people/all']");
   private final SelenideElement profilePageLink = $("a[href='/profile']");
 
   public EditSpendingPage editSpending(String spendingDescription) {
@@ -36,4 +38,16 @@ public class MainPage {
     profilePageLink.click();
     return new ProfilePage();
   }
+
+  public FriendsPage clickMyFriendLink(){
+    myfriendsLink.click();
+    return new FriendsPage();
+  }
+  public FriendsPage clickAllPeopleLink(){
+    allPeopleLink.click();
+    return new FriendsPage();
+  }
+
+
+
 }
