@@ -6,6 +6,9 @@ public interface Config {
     return LocalConfig.INSTANCE;
   }
   String frontUrl();
+  String authUrl();
+  String gatewayUrl();
+  String userdataUrl();
   String spendUrl();
   String ghUrl();
 }

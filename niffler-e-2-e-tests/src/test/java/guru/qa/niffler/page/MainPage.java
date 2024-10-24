@@ -48,6 +48,4 @@ public class MainPage {
     return new FriendsPage();
   }
 
-
-
 }

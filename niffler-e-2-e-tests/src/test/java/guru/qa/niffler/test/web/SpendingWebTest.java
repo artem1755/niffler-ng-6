@@ -1,33 +1,39 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
-import com.github.javafaker.Faker;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.DisabledByIssue;
+import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.Spending;
+import guru.qa.niffler.jupiter.extension.TestMethodContextExtension;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.page.MainPage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+
+import static guru.qa.niffler.utils.RandomDataUtils.randomUserName;
 
 @ExtendWith(BrowserExtension.class)
 public class SpendingWebTest {
 
   private static final Config CFG = Config.getInstance();
-  Faker faker = new Faker();
 
-
-
-  @Spending(
-      username = "duck",
-      category = "Обучение",
-      description = "Обучение Advanced 2.0",
-      amount = 79990
-  )
+@User(
+        username = "duck",
+        categories = @Category(
+                archived = false
+        ),
+        spendings = @Spending(
+                category = "Обучение",
+                description = "Обучение Advanced 2.0",
+                amount = 79990
+        )
+)
   @Test
   void categoryDescriptionShouldBeChangedFromTable(SpendJson spend) {
     final String newDescription = "Обучение Niffler Next Generation";
@@ -47,7 +53,7 @@ public class SpendingWebTest {
 
     Selenide.open(CFG.frontUrl(), LoginPage.class)
             .clickCreateNewAccBtn()
-            .register("user_"+faker.artist().name(), "qwerty","qwerty")
+            .register(randomUserName(), "qwerty","qwerty")
             .checkThatParagrapthContainsSuccessMessage(successMessage);
   }
 
@@ -68,7 +74,7 @@ public class SpendingWebTest {
 
     Selenide.open(CFG.frontUrl(), LoginPage.class)
             .clickCreateNewAccBtn()
-            .register("user_"+faker.artist().name(), "qwerty","qwertyy")
+            .register(randomUserName(), "qwerty","qwertyy")
             .checkThatFormContainsErrorMessage(errorMassage);
   }
 
@@ -90,10 +96,12 @@ public class SpendingWebTest {
   }
 
 
-  @Category(
-          username = "duck",
-          archived = false
-  )
+@User(
+        username = "duck",
+        categories = @Category(
+                archived = false
+        )
+)
   @Test
   void archivedCategoryShouldPresentInCategoriesList(CategoryJson category){
     Selenide.open(CFG.frontUrl(), LoginPage.class)
@@ -111,11 +119,12 @@ public class SpendingWebTest {
   }
 
 
-
-  @Category(
-          username = "duck",
-          archived = true
-  )
+@User(
+        username = "duck",
+        categories = @Category(
+                archived = true
+        )
+)
   @Test
   void activeCategoryShouldPresentInCategoriesList(CategoryJson category){
     Selenide.open(CFG.frontUrl(), LoginPage.class)
