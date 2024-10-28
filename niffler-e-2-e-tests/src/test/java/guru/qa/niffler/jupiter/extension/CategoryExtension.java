@@ -1,45 +1,47 @@
 package guru.qa.niffler.jupiter.extension;
 
-import com.github.javafaker.Faker;
 import guru.qa.niffler.api.SpendApiClient;
 import guru.qa.niffler.jupiter.annotation.Category;
+import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.CategoryJson;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
+import static guru.qa.niffler.utils.RandomDataUtils.randomCategory;
+
 public class CategoryExtension implements BeforeEachCallback, ParameterResolver, AfterTestExecutionCallback {
     public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(CategoryExtension.class);
     private final SpendApiClient spendApiClient = new SpendApiClient();
-    private final Faker faker = new Faker();
-
     public void beforeEach(ExtensionContext context) throws Exception {
-        AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), Category.class)
-                .ifPresent(anno -> {
-                    CategoryJson category = new CategoryJson(
-                            null,
-                            faker.aviation().airport(),
-                            anno.username(),
-                            false
-                    );
+        AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), User.class)
+                .ifPresent(userAnno -> {
+                    if (userAnno.categories().length > 0) {
+                        Category category = userAnno.categories()[0];
 
-                    CategoryJson createCategory = spendApiClient.createCategory(category);
-
-                    if (anno.archived()){
-                        CategoryJson archivedCategory = new CategoryJson(
-                                createCategory.id(),
-                                createCategory.name(),
-                                createCategory.username(),
-                                true
+                        CategoryJson categoryDTO = new CategoryJson(
+                                null,
+                                category.name().equals("") ? randomCategory() : category.name(),
+                                userAnno.username(),
+                                false
                         );
-                        createCategory = spendApiClient.editCategory(archivedCategory);
 
+                        CategoryJson createCategory = spendApiClient.createCategory(categoryDTO);
+
+                        if (category.archived()){
+                            CategoryJson archivedCategory = new CategoryJson(
+                                    createCategory.id(),
+                                    createCategory.name(),
+                                    createCategory.username(),
+                                    true
+                            );
+                            createCategory = spendApiClient.editCategory(archivedCategory);
+                        }
+
+                        context.getStore(NAMESPACE).put(
+                                context.getUniqueId(),
+                                createCategory
+                        );
                     }
-
-                    context.getStore(NAMESPACE).put(
-                            context.getUniqueId(),
-                            createCategory
-                    );
-
                 });
     }
 
@@ -58,14 +60,16 @@ public class CategoryExtension implements BeforeEachCallback, ParameterResolver,
     public void afterTestExecution(ExtensionContext context) throws Exception {
         CategoryJson category = context.getStore(NAMESPACE).get(context.getUniqueId(), CategoryJson.class);
 
-        if (category.archived()){
-            CategoryJson archivedCategory = new CategoryJson(
-                    category.id(),
-                    category.name(),
-                    category.username(),
-                    true
-            );
-            spendApiClient.editCategory(archivedCategory);
+        if (category != null) {
+            if (category.archived()){
+                CategoryJson archivedCategory = new CategoryJson(
+                        category.id(),
+                        category.name(),
+                        category.username(),
+                        true
+                );
+                spendApiClient.editCategory(archivedCategory);
+            }
         }
     }
 }
