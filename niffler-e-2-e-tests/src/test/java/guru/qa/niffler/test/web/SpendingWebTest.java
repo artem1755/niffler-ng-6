@@ -29,7 +29,7 @@ public class SpendingWebTest {
                 archived = false
         ),
         spendings = @Spending(
-                category = "Обучение",
+                category = "Обучение2",
                 description = "Обучение Advanced 2.0",
                 amount = 79990
         )
