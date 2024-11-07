@@ -26,7 +26,7 @@ public record UserJson(
     @JsonProperty("photoSmall")
     String photoSmall){
 
-    public static UserJson fromEmtity(UserEntity entity){
+    public static UserJson fromEntity(UserEntity entity){
        return new UserJson(
                entity.getId(),
                entity.getUsername(),
