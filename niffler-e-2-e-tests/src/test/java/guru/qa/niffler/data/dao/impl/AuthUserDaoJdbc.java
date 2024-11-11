@@ -7,6 +7,8 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,7 +19,6 @@ public class AuthUserDaoJdbc implements AuthUserDao {
         this.connection = connection;
     }
     private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-
 
     @Override
     public AuthUserEntity create(AuthUserEntity user) {
@@ -50,17 +51,97 @@ public class AuthUserDaoJdbc implements AuthUserDao {
     }
 
     @Override
+    public List<AuthUserEntity> findAllUsers() {
+        List<AuthUserEntity> userEntities = new ArrayList<>();
+
+        try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM \"user\"")) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    AuthUserEntity aue = new AuthUserEntity();
+                    aue.setId(rs.getObject("id", UUID.class));
+                    aue.setUsername(rs.getString("username"));
+                    aue.setPassword(rs.getString("password"));
+                    aue.setEnabled(rs.getBoolean("enabled"));
+                    aue.setAccountNonExpired(rs.getBoolean("account_non_expired"));
+                    aue.setAccountNonLocked(rs.getBoolean("account_non_locked"));
+                    aue.setCredentialsNonExpired(rs.getBoolean("credentials_non_expired"));
+                    userEntities.add(aue);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return userEntities;
+    }
+
+    @Override
     public Optional<AuthUserEntity> findUserById(UUID id) {
-        return Optional.empty();
+
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT * FROM \"user\" WHERE id = ?"
+        )) {
+            ps.setObject(1, id);
+            ps.execute();
+            try (ResultSet rs = ps.getResultSet()) {
+                if (rs.next()) {
+                    AuthUserEntity aue = new AuthUserEntity();
+                    aue.setId(rs.getObject("id", UUID.class));
+                    aue.setUsername(rs.getString("username"));
+                    aue.setPassword(rs.getString("password"));
+                    aue.setEnabled(rs.getBoolean("enabled"));
+                    aue.setAccountNonExpired(rs.getBoolean("account_non_expired"));
+                    aue.setAccountNonLocked(rs.getBoolean("account_non_locked"));
+                    aue.setCredentialsNonExpired(rs.getBoolean("credentials_non_expired"));
+                    return Optional.of(aue);
+                } else {
+                    return Optional.empty();
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Optional<AuthUserEntity> findByUsername(String username) {
-        return Optional.empty();
+
+
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT * FROM \"user\" WHERE username = ?"
+        )) {
+            ps.setObject(1, username);
+            ps.execute();
+            try (ResultSet rs = ps.getResultSet()) {
+                if (rs.next()) {
+                    AuthUserEntity aue = new AuthUserEntity();
+                    aue.setId(rs.getObject("id", UUID.class));
+                    aue.setUsername(rs.getString("username"));
+                    aue.setPassword(rs.getString("password"));
+                    aue.setEnabled(rs.getBoolean("enabled"));
+                    aue.setAccountNonExpired(rs.getBoolean("account_non_expired"));
+                    aue.setAccountNonLocked(rs.getBoolean("account_non_locked"));
+                    aue.setCredentialsNonExpired(rs.getBoolean("credentials_non_expired"));
+                    return Optional.of(aue);
+                } else {
+                    return Optional.empty();
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void deleteUser(AuthUserEntity user) {
-
+        try (
+                PreparedStatement ps = connection.prepareStatement(
+                        "DELETE FROM \"user\" WHERE id = ?"
+                )) {
+            ps.setObject(1, user.getId());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
