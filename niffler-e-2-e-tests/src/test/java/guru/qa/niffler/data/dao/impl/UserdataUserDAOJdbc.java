@@ -13,11 +13,15 @@ import java.util.UUID;
 
 public class UserdataUserDAOJdbc implements UserDao {
     private static final Config CFG = Config.getInstance();
+    private final Connection connection;
+
+    public UserdataUserDAOJdbc(Connection connection) {
+        this.connection = connection;
+    }
 
 
     @Override
     public UserEntity createUser(UserEntity user) {
-        try (Connection connection = Databases.connection(CFG.userdataJdbcUrl())) {
             try (PreparedStatement ps = connection.prepareStatement(
                     "INSERT INTO \"user\" (username, currency,firstname,surname,photo,photo_small,full_name) " +
                             "VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -41,7 +45,6 @@ public class UserdataUserDAOJdbc implements UserDao {
                 }
                 user.setId(generatedKey);
                 return user;
-            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -49,7 +52,6 @@ public class UserdataUserDAOJdbc implements UserDao {
 
     @Override
     public Optional<UserEntity> findById(UUID id) {
-        try (Connection connection = Databases.connection(CFG.userdataJdbcUrl())) {
             try (PreparedStatement ps = connection.prepareStatement(
                     "SELECT * FROM \"user\" WHERE id = ?"
             )) {
@@ -73,7 +75,6 @@ public class UserdataUserDAOJdbc implements UserDao {
                         return Optional.empty();
                     }
                 }
-            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -81,7 +82,6 @@ public class UserdataUserDAOJdbc implements UserDao {
 
     @Override
     public Optional<UserEntity> findByUsername(String username) {
-        try (Connection connection = Databases.connection(CFG.userdataJdbcUrl())) {
             try (PreparedStatement ps = connection.prepareStatement(
                     "SELECT * FROM \"user\" WHERE username = ?"
             )) {
@@ -105,7 +105,6 @@ public class UserdataUserDAOJdbc implements UserDao {
                     } else {
                         return Optional.empty();
                     }
-                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -114,7 +113,7 @@ public class UserdataUserDAOJdbc implements UserDao {
 
     @Override
     public void delete(UserEntity user) {
-        try (Connection connection = Databases.connection(CFG.userdataJdbcUrl());
+        try (
              PreparedStatement ps = connection.prepareStatement(
                      "DELETE FROM \"user\" WHERE id = ?"
              )) {
