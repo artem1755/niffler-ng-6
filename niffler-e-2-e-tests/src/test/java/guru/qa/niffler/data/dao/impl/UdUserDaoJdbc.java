@@ -1,9 +1,8 @@
 package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.data.dao.UserDao;
+import guru.qa.niffler.data.dao.UdUserDao;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
-import guru.qa.niffler.data.entity.spend.SpendEntity;
 import guru.qa.niffler.data.entity.user.UserEntity;
 import guru.qa.niffler.model.CurrencyValues;
 
@@ -13,18 +12,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class UdUserDAOJdbc implements UserDao {
+import static guru.qa.niffler.data.tpl.Connections.holder;
+
+public class UdUserDaoJdbc implements UdUserDao {
     private static final Config CFG = Config.getInstance();
-    private final Connection connection;
-
-    public UdUserDAOJdbc(Connection connection) {
-        this.connection = connection;
-    }
-
 
     @Override
-    public UserEntity createUser(UserEntity user) {
-            try (PreparedStatement ps = connection.prepareStatement(
+    public UserEntity create(UserEntity user) {
+            try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                     "INSERT INTO \"user\" (username, currency,firstname,surname,photo,photo_small,full_name) " +
                             "VALUES (?, ?, ?, ?, ?, ?, ?)",
                     Statement.RETURN_GENERATED_KEYS
@@ -56,7 +51,7 @@ public class UdUserDAOJdbc implements UserDao {
     public List<UserEntity> findAllUsers() {
         List<UserEntity> userEntities = new ArrayList<>();
 
-        try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM \"user\"")) {
+        try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement("SELECT * FROM \"user\"")) {
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -81,7 +76,7 @@ public class UdUserDAOJdbc implements UserDao {
 
     @Override
     public Optional<UserEntity> findById(UUID id) {
-            try (PreparedStatement ps = connection.prepareStatement(
+            try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                     "SELECT * FROM \"user\" WHERE id = ?"
             )) {
                 ps.setObject(1, id);
@@ -111,7 +106,7 @@ public class UdUserDAOJdbc implements UserDao {
 
     @Override
     public Optional<UserEntity> findByUsername(String username) {
-            try (PreparedStatement ps = connection.prepareStatement(
+            try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                     "SELECT * FROM \"user\" WHERE username = ?"
             )) {
                 ps.setString(1, username);
@@ -143,7 +138,7 @@ public class UdUserDAOJdbc implements UserDao {
     @Override
     public void delete(UserEntity user) {
         try (
-             PreparedStatement ps = connection.prepareStatement(
+             PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                      "DELETE FROM \"user\" WHERE id = ?"
              )) {
             ps.setObject(1, user.getId());
