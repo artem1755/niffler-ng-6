@@ -21,8 +21,6 @@ public class SpendDbClient {
     private static final Config CFG = Config.getInstance();
     private final SpendDao spendDao = new SpendDaoJdbc();
     private final CategoryDao categoryDao = new CategoryDaoJdbc();
-//    private final SpendDao spendDao = new SpendDaoSpringJdbc();
-//    private final CategoryDao categoryDao = new CategoryDaoSpringJdbc();
 
     private final JdbcTransactionTemplate jdbcTxTemplate = new JdbcTransactionTemplate(
             CFG.spendJdbcUrl()
