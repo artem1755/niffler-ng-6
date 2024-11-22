@@ -1,21 +1,23 @@
 package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.data.Databases;
 import guru.qa.niffler.data.dao.UserDao;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
+import guru.qa.niffler.data.entity.spend.SpendEntity;
 import guru.qa.niffler.data.entity.user.UserEntity;
 import guru.qa.niffler.model.CurrencyValues;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class UserdataUserDAOJdbc implements UserDao {
+public class UdUserDAOJdbc implements UserDao {
     private static final Config CFG = Config.getInstance();
     private final Connection connection;
 
-    public UserdataUserDAOJdbc(Connection connection) {
+    public UdUserDAOJdbc(Connection connection) {
         this.connection = connection;
     }
 
@@ -48,6 +50,33 @@ public class UserdataUserDAOJdbc implements UserDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public List<UserEntity> findAllUsers() {
+        List<UserEntity> userEntities = new ArrayList<>();
+
+        try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM \"user\"")) {
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    UserEntity ue = new UserEntity();
+                    ue.setId(rs.getObject("id", UUID.class));
+                    ue.setUsername(rs.getString("username"));
+                    ue.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
+                    ue.setFirstname(rs.getString("firstname"));
+                    ue.setSurname(rs.getString("surname"));
+                    ue.setPhoto(rs.getBytes("photo"));
+                    ue.setPhotoSmall(rs.getBytes("photo_small"));
+                    ue.setFullname(rs.getString("full_name"));
+
+                    userEntities.add(ue);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return userEntities;
     }
 
     @Override
