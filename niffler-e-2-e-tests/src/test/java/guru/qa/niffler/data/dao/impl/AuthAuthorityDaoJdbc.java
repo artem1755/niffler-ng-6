@@ -2,6 +2,7 @@ package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthAuthorityDao;
+import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 
@@ -26,7 +27,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
                 "INSERT INTO \"authority\" (user_id, authority) VALUES (?, ?)",
                 PreparedStatement.RETURN_GENERATED_KEYS)) {
             for (AuthorityEntity a : authority) {
-                ps.setObject(1, a.getUserId());
+                ps.setObject(1, a.getUser().getId());
                 ps.setString(2, a.getAuthority().name());
                 ps.addBatch();
                 ps.clearParameters();
@@ -48,7 +49,10 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
                 if (rs.next()) {
                     AuthorityEntity ae = new AuthorityEntity();
                     ae.setId(rs.getObject("id", UUID.class));
-                    ae.setUserId(rs.getObject("user_id", UUID.class));
+                    AuthUserEntity user = new AuthUserEntity();
+                    user.setId(rs.getObject("user_id", UUID.class));
+                    ae.setUser(user);
+//                    ae.setUserId(rs.getObject("user_id", UUID.class));
                     String authorityStr = rs.getString("authority");
                     Authority authority = Authority.valueOf(authorityStr);
                     ae.setAuthority(authority);
@@ -74,7 +78,9 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
                 while (rs.next()) {
                     AuthorityEntity ae = new AuthorityEntity();
                     ae.setId(rs.getObject("id", UUID.class));
-                    ae.setUserId(rs.getObject("user_id", UUID.class));
+                    AuthUserEntity user = new AuthUserEntity();
+                    user.setId(rs.getObject("user_id", UUID.class));
+                    ae.setUser(user);
                     String authorityStr = rs.getString("authority");
                     Authority authority = Authority.valueOf(authorityStr);
                     ae.setAuthority(authority);
@@ -98,7 +104,9 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
                 while (rs.next()) {
                     AuthorityEntity ae = new AuthorityEntity();
                     ae.setId(rs.getObject("id", UUID.class));
-                    ae.setUserId(rs.getObject("user_id", UUID.class));
+                    AuthUserEntity user = new AuthUserEntity();
+                    user.setId(rs.getObject("user_id", UUID.class));
+                    ae.setUser(user);
                     String authorityStr = rs.getString("authority");
                     Authority authority = Authority.valueOf(authorityStr);
                     ae.setAuthority(authority);

@@ -1,113 +1,82 @@
 package guru.qa.niffler.test.web;
 
-import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.CurrencyValues;
-import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
-import guru.qa.niffler.service.SpendDbClient;
 import guru.qa.niffler.service.UsersDbClient;
 import org.junit.jupiter.api.Test;
-import java.util.Date;
 
-import static guru.qa.niffler.model.CurrencyValues.RUB;
-import static guru.qa.niffler.utils.RandomDataUtils.randomUserName;
 
 public class JdbcTestNew {
     @Test
-    void test1() {
-        SpendDbClient spendDbClient = new SpendDbClient();
-        SpendJson spend = spendDbClient.createSpend(
-                new SpendJson(
+    void springJdbcTest() {
+        UsersDbClient usersDbClient = new UsersDbClient();
+        UserJson myself = usersDbClient.createUser(
+                new UserJson(
                         null,
-                        new Date(),
-                        new CategoryJson(
-                                null,
-                                "cat-name-qwerty12345",
-                                "duck",
-                                false
-                        ),
+                        "myself",
+                        null,
+                        null,
+                        null,
                         CurrencyValues.RUB,
-                        1000.0,
-                        "spend-name-tx",
+                        null,
+                        null,
                         null
                 )
         );
-        System.out.println(spend);
-    }
 
-    @Test
-    void test2() {
-        UsersDbClient usersDbClient = new UsersDbClient();
-        UserJson user = usersDbClient.createUserWithSpringJdbcTransaction(
+
+        UserJson friend = usersDbClient.createUser(
                 new UserJson(
                         null,
-                        randomUserName(),
-                        "Joe",
-                        "Jhones2",
-                        "Joe Jones2",
-                        RUB,
-                        "photo",
-                        "photoSmall"
+                        "friend",
+                        null,
+                        null,
+                        null,
+                        CurrencyValues.RUB,
+                        null,
+                        null,
+                        null
                 )
         );
-        System.out.println(user);
-    }
 
-    @Test
-    void test3() {
-        UsersDbClient usersDbClient = new UsersDbClient();
-        UserJson user = usersDbClient.createUserWithoutSpringJdbcTransaction(
+
+        UserJson income = usersDbClient.createUser(
                 new UserJson(
                         null,
-                        randomUserName(),
-                        "Joe",
-                        "Jhones2",
-                        "Joe Jones2",
-                        RUB,
-                        "photo",
-                        "photoSmall"
+                        "income",
+                        null,
+                        null,
+                        null,
+                        CurrencyValues.RUB,
+                        null,
+                        null,
+                        null
                 )
         );
-        System.out.println(user);
-    }
 
-    @Test
-    void test4() {
-        UsersDbClient usersDbClient = new UsersDbClient();
-        UserJson user = usersDbClient.createUserWithJdbcTransaction(
+        UserJson outcome = usersDbClient.createUser(
                 new UserJson(
                         null,
-                        randomUserName(),
-                        "Joe",
-                        "Jhones2",
-                        "Joe Jones2",
-                        RUB,
-                        "photo",
-                        "photoSmall"
-                )
-        );
-        System.out.println(user);
-    }
-
-    @Test
-    void jdbcWithoutTransactionTest() {
-        UsersDbClient usersDbClient = new UsersDbClient();
-        UserJson user = usersDbClient.createUserWithoutJdbcTransaction(
-                new UserJson(
+                        "outcome",
                         null,
-                        "nigga42233334234",
-                        "Joe",
-                        "Jhones2",
-                        "Joe Jones2",
-                        RUB,
-                        "photo",
-                        "photoSmall"
+                        null,
+                        null,
+                        CurrencyValues.RUB,
+                        null,
+                        null,
+                        null
                 )
         );
-        System.out.println(user);
+
+        // Добавляем входящее приглашение
+        usersDbClient.addInvitation(income, myself);
+
+        // Добавляем исходящее приглашение
+        usersDbClient.addInvitation(myself, outcome);
+//
+        // Добавляем друзей
+        usersDbClient.addFriends(myself, friend);
     }
-
-
 }
 
 
