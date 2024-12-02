@@ -17,11 +17,14 @@ public class AuthAuthorityRowMapper  implements RowMapper<AuthorityEntity>  {
 
     @Override
     public AuthorityEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
+        AuthUserEntity user = new AuthUserEntity();
+        user.setId(rs.getObject("user_id", UUID.class));
+
         AuthorityEntity result = new AuthorityEntity();
         result.setId(rs.getObject("id", UUID.class));
         Authority authority = Authority.valueOf(rs.getString("authority"));
         result.setAuthority(authority);
-        result.setUserId(rs.getObject("user_id", UUID.class));
+        result.setUser(user);
         return result;
     }
 }

@@ -8,7 +8,9 @@ import guru.qa.niffler.data.dao.impl.*;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
-import guru.qa.niffler.data.entity.user.UserEntity;
+import guru.qa.niffler.data.entity.userdata.UserEntity;
+import guru.qa.niffler.data.repository.UdUserRepository;
+import guru.qa.niffler.data.repository.impl.UdUserRepositoryJdbc;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.UserJson;
 import org.springframework.data.transaction.ChainedTransactionManager;
@@ -20,21 +22,13 @@ import org.springframework.transaction.support.TransactionTemplate;
 import java.util.Arrays;
 
 import static guru.qa.niffler.data.tpl.DataSources.dataSource;
-import static guru.qa.niffler.model.CurrencyValues.RUB;
-import static guru.qa.niffler.utils.RandomDataUtils.randomUserName;
 
 
 public class UsersDbClient {
     private static final Config CFG = Config.getInstance();
     private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-    private final AuthUserDao authUserDaoSpringJdbc = new AuthUserDaoSpringJdbc();
-    private final AuthAuthorityDao authAuthorityDaoSpringJdbc = new AuthAuthorityDaoSpringJdbc();
-    private final UdUserDao udUserDaoSpringJdbc = new UdUserDaoSpringJdbc();
-
-    private final AuthUserDao authUserDaoJdbc = new AuthUserDaoJdbc();
-    private final AuthAuthorityDao authAuthorityDaoJdbc = new AuthAuthorityDaoJdbc();
-    private final UdUserDao udUserDaoJdbc = new UdUserDaoJdbc();
+    private final UdUserRepository udUserRepository = new UdUserRepositoryJdbc();
 
 
     TransactionTemplate txTemplate = new TransactionTemplate(
@@ -53,122 +47,26 @@ public class UsersDbClient {
             CFG.userdataJdbcUrl()
     );
 
-    // 1. Spring JDBC с транзакциями
-    public UserJson createUserWithSpringJdbcTransaction(UserJson user) {
-        return txTemplate.execute(status -> {
-                    AuthUserEntity authUser = new AuthUserEntity();
-                    authUser.setUsername(user.username());
-                    authUser.setPassword(pe.encode("12345"));
-                    authUser.setEnabled(true);
-                    authUser.setAccountNonExpired(true);
-                    authUser.setAccountNonLocked(true);
-                    authUser.setCredentialsNonExpired(true);
 
-                    AuthUserEntity createdAuthUser = authUserDaoSpringJdbc.create(authUser);
-
-                    AuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
-                            e -> {
-                                AuthorityEntity ae = new AuthorityEntity();
-                                ae.setUserId(createdAuthUser.getId());
-                                ae.setAuthority(e);
-                                return ae;
-                            }
-                    ).toArray(AuthorityEntity[]::new);
-
-                    authAuthorityDaoSpringJdbc.create(authorityEntities);
-                    return UserJson.fromEntity(
-                            udUserDaoSpringJdbc.create(UserEntity.fromJson(user))
-                    );
-                }
+    public UserJson createUser(UserJson user) {
+        return xaTransactionTemplate.execute(() -> UserJson.fromEntity(
+                        udUserRepository.create(UserEntity.fromJson(user)),
+                        null
+                )
         );
     }
 
-
-    // 2. Spring JDBC без транзакций
-    public UserJson createUserWithoutSpringJdbcTransaction(UserJson user) {
-        AuthUserEntity authUser = new AuthUserEntity();
-        authUser.setUsername(user.username());
-        authUser.setPassword(pe.encode("12345"));
-        authUser.setEnabled(true);
-        authUser.setAccountNonExpired(true);
-        authUser.setAccountNonLocked(true);
-        authUser.setCredentialsNonExpired(true);
-
-        AuthUserEntity createdAuthUser = authUserDaoSpringJdbc.create(authUser);
-
-        AuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
-                e -> {
-                    AuthorityEntity ae = new AuthorityEntity();
-                    ae.setUserId(createdAuthUser.getId());
-                    ae.setAuthority(e);
-                    return ae;
-                }
-        ).toArray(AuthorityEntity[]::new);
-
-        authAuthorityDaoSpringJdbc.create(authorityEntities);
-        return UserJson.fromEntity(
-                udUserDaoSpringJdbc.create(UserEntity.fromJson(user))
-        );
+    public void addInvitation(UserJson requester, UserJson addressee) {
+        xaTransactionTemplate.execute(() -> {
+            udUserRepository.addInvitation(UserEntity.fromJson(requester), UserEntity.fromJson(addressee));
+            return null;
+        });
     }
 
-
-    // 3. JDBC с транзакциями
-    public UserJson createUserWithJdbcTransaction(UserJson user) {
-        return txTemplate.execute(status -> {
-                    AuthUserEntity authUser = new AuthUserEntity();
-                    authUser.setUsername(null);
-                    authUser.setPassword(pe.encode("12345"));
-                    authUser.setEnabled(true);
-                    authUser.setAccountNonExpired(true);
-                    authUser.setAccountNonLocked(true);
-                    authUser.setCredentialsNonExpired(true);
-
-                    AuthUserEntity createdAuthUser = authUserDaoJdbc.create(authUser);
-
-                    AuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
-                            e -> {
-                                AuthorityEntity ae = new AuthorityEntity();
-                                ae.setUserId(createdAuthUser.getId());
-                                ae.setAuthority(e);
-                                return ae;
-                            }
-                    ).toArray(AuthorityEntity[]::new);
-
-
-
-                    authAuthorityDaoJdbc.create(authorityEntities);
-                    return UserJson.fromEntity(
-                            udUserDaoJdbc.create(UserEntity.fromJson(user))
-                    );
-                }
-        );
-    }
-
-
-    // 4. JDBC без транзакций
-    public UserJson createUserWithoutJdbcTransaction(UserJson user) {
-        AuthUserEntity authUser = new AuthUserEntity();
-        authUser.setUsername(user.username());
-        authUser.setPassword(pe.encode("12345"));
-        authUser.setEnabled(true);
-        authUser.setAccountNonExpired(true);
-        authUser.setAccountNonLocked(true);
-        authUser.setCredentialsNonExpired(true);
-
-        AuthUserEntity createdAuthUser = authUserDaoJdbc.create(authUser);
-
-        AuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
-                e -> {
-                    AuthorityEntity ae = new AuthorityEntity();
-                    ae.setUserId(createdAuthUser.getId());
-                    ae.setAuthority(e);
-                    return ae;
-                }
-        ).toArray(AuthorityEntity[]::new);
-
-        authAuthorityDaoJdbc.create(authorityEntities);
-        return UserJson.fromEntity(
-                udUserDaoJdbc.create(UserEntity.fromJson(user))
-        );
+    public void addFriends(UserJson requester, UserJson addressee) {
+        xaTransactionTemplate.execute(() -> {
+            udUserRepository.addFriend(UserEntity.fromJson(requester), UserEntity.fromJson(addressee));
+            return null;
+        });
     }
 }
