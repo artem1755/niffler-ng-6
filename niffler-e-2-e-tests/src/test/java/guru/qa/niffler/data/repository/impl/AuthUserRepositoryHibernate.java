@@ -14,7 +14,6 @@ import static guru.qa.niffler.data.jpa.EntityManagers.em;
 public class AuthUserRepositoryHibernate implements AuthUserRepository {
 
     private static final Config CFG = Config.getInstance();
-
     private final EntityManager entityManager = em(CFG.authJdbcUrl());
 
     @Override
@@ -42,5 +41,18 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
         } catch (NoResultException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public AuthUserEntity update(AuthUserEntity user) {
+        entityManager.joinTransaction();
+        return entityManager.merge(user);
+    }
+
+    @Override
+    public void remove(AuthUserEntity user) {
+        entityManager.joinTransaction();
+        AuthUserEntity attachedUser = entityManager.contains(user) ? user : entityManager.merge(user);
+        entityManager.remove(attachedUser);
     }
 }
