@@ -14,6 +14,8 @@ public class MainPage {
   private final SelenideElement myfriendsLink = $("a.nav-link[href='/people/friends']");
   private final SelenideElement allPeopleLink = $("a.nav-link[href='/people/all']");
   private final SelenideElement profilePageLink = $("a[href='/profile']");
+  private final SelenideElement statComponent = $("#stat");
+  private final SelenideElement spendingTable = $("#spendings");
 
   public EditSpendingPage editSpending(String spendingDescription) {
     tableRows.find(text(spendingDescription)).$$("td").get(5).click();
@@ -46,6 +48,12 @@ public class MainPage {
   public FriendsPage clickAllPeopleLink(){
     allPeopleLink.click();
     return new FriendsPage();
+  }
+
+  public MainPage checkThatPageLoaded() {
+    statComponent.should(visible).shouldHave(text("Statistics"));
+    spendingTable.should(visible).shouldHave(text("History of Spendings"));
+    return this;
   }
 
 }

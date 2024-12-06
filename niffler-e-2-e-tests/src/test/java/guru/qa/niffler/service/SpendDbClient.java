@@ -32,7 +32,7 @@ public class SpendDbClient implements SpendClient{
             CFG.spendJdbcUrl()
     );
 
-    public SpendJson create(SpendJson spend) {
+    public SpendJson createSpend(SpendJson spend) {
         return xaTransactionTemplate.execute(() -> {
             SpendEntity spendEntity = SpendEntity.fromJson(spend);
             // Проверка на существование категории по ID

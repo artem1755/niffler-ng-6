@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface SpendClient {
-    SpendJson create(SpendJson spend);
+    SpendJson createSpend(SpendJson spend);
     SpendJson updateSpend(SpendJson spend);
     Optional<SpendJson> findSpendById(UUID id);
     List<SpendJson> findSpendByUsernameAndDescription(String username, String description);

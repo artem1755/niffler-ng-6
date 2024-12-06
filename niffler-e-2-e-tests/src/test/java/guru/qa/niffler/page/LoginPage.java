@@ -28,4 +28,9 @@ public class LoginPage {
   public void checkIsStillOnLoginPage() {
     Assertions.assertTrue(WebDriverRunner.url().contains("/login"), "Пользователь не на странице логина");
   }
+
+  public MainPage successLogin(String username, String password) {
+    login(username, password);
+    return new MainPage();
+  }
 }

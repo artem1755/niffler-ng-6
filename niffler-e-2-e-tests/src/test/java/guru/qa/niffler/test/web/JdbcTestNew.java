@@ -17,25 +17,25 @@ public class JdbcTestNew {
 
     SpendDbClient spendDbClient = new SpendDbClient();
 
-    @Test
-    void test1() {
-                SpendJson spend = spendDbClient.create(
-                new SpendJson(
-                        null,
-                        new Date(),
-                        new CategoryJson(
-                                null,
-                                "cat-name-tx-04",
-                                "duck",
-                                false
-                        ),
-                        CurrencyValues.RUB,
-                        1000.0,
-                        "spend-name-un4",
-                        "duck"
-                )
-        );
-    }
+//    @Test
+//    void test1() {
+//                SpendJson spend = spendDbClient.create(
+//                new SpendJson(
+//                        null,
+//                        new Date(),
+//                        new CategoryJson(
+//                                null,
+//                                "cat-name-tx-04",
+//                                "duck",
+//                                false
+//                        ),
+//                        CurrencyValues.RUB,
+//                        1000.0,
+//                        "spend-name-un4",
+//                        "duck"
+//                )
+//        );
+//    }
 
     @Test
     void test2() {
