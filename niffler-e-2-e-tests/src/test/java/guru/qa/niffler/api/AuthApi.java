@@ -1,10 +1,7 @@
 package guru.qa.niffler.api;
 
 import retrofit2.Call;
-import retrofit2.http.Field;
-import retrofit2.http.FormUrlEncoded;
-import retrofit2.http.GET;
-import retrofit2.http.POST;
+import retrofit2.http.*;
 
 public interface AuthApi {
     @GET("register")
@@ -16,6 +13,7 @@ public interface AuthApi {
             @Field("username") String username,
             @Field("password") String password,
             @Field("passwordSubmit") String passwordSubmit,
-            @Field("_csrf") String csrf
+            @Field("_csrf") String csrf,
+            @Header("Cookie") String xsrfToken
     );
 }

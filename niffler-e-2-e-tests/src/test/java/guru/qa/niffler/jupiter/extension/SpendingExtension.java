@@ -1,6 +1,5 @@
 package guru.qa.niffler.jupiter.extension;
 
-import guru.qa.niffler.api.SpendApiClient;
 import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.CategoryJson;
@@ -71,9 +70,12 @@ public class SpendingExtension implements BeforeEachCallback, ParameterResolver 
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public SpendJson[] resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-        return (SpendJson[]) extensionContext.getStore(NAMESPACE).get(extensionContext.getUniqueId(), List.class).toArray();
+        List<SpendJson> spendList = extensionContext.getStore(NAMESPACE).get(extensionContext.getUniqueId(), List.class);
+        if (spendList == null) {
+            return new SpendJson[0]; // Возвращаем пустой массив, если данных нет
+        }
+        return spendList.toArray(new SpendJson[0]); // Преобразование списка в массив типа SpendJson[]
     }
 
 }

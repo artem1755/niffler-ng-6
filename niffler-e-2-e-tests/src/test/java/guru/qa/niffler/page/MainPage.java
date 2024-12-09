@@ -16,14 +16,11 @@ public class MainPage {
   private final SelenideElement profilePageLink = $("a[href='/profile']");
   private final SelenideElement statComponent = $("#stat");
   private final SelenideElement spendingTable = $("#spendings");
+  private final SelenideElement searchInput = $("input[type='text']");
 
   public EditSpendingPage editSpending(String spendingDescription) {
     tableRows.find(text(spendingDescription)).$$("td").get(5).click();
     return new EditSpendingPage();
-  }
-
-  public void checkThatTableContainsSpending(String spendingDescription) {
-    tableRows.find(text(spendingDescription)).should(visible);
   }
 
   public void checkThatHeaderContainsText(String header){
@@ -54,6 +51,15 @@ public class MainPage {
     statComponent.should(visible).shouldHave(text("Statistics"));
     spendingTable.should(visible).shouldHave(text("History of Spendings"));
     return this;
+  }
+
+  public void checkThatTableContainsSpending(String spendingDescription) {
+    searchSpend(spendingDescription);
+    tableRows.find(text(spendingDescription)).should(visible);
+  }
+
+  public void searchSpend(String spendingDescription) {
+    searchInput.setValue(spendingDescription).pressEnter();
   }
 
 }

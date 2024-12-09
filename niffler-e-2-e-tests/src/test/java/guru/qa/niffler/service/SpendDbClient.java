@@ -32,6 +32,7 @@ public class SpendDbClient implements SpendClient{
             CFG.spendJdbcUrl()
     );
 
+    @Override
     public SpendJson createSpend(SpendJson spend) {
         return xaTransactionTemplate.execute(() -> {
             SpendEntity spendEntity = SpendEntity.fromJson(spend);
@@ -44,6 +45,7 @@ public class SpendDbClient implements SpendClient{
         });
     }
 
+    @Override
     public SpendJson updateSpend(SpendJson spend) {
         return xaTransactionTemplate.execute(() -> {
             SpendEntity spendEntity = SpendEntity.fromJson(spend);
@@ -76,6 +78,7 @@ public class SpendDbClient implements SpendClient{
         });
     }
 
+    @Override
     public CategoryJson createCategory(CategoryJson category) {
         return xaTransactionTemplate.execute(() -> {
             CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
@@ -84,6 +87,7 @@ public class SpendDbClient implements SpendClient{
         });
     }
 
+    @Override
     public CategoryJson updateCategory(CategoryJson category) {
         return xaTransactionTemplate.execute(() -> {
             CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
@@ -106,6 +110,7 @@ public class SpendDbClient implements SpendClient{
         });
     }
 
+    @Override
     public void deleteCategory(CategoryJson category) {
         xaTransactionTemplate.execute(() -> {
             CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
@@ -113,4 +118,5 @@ public class SpendDbClient implements SpendClient{
             return null;
         });
     }
+
 }
