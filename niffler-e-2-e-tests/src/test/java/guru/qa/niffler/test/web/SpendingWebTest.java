@@ -1,5 +1,6 @@
 package guru.qa.niffler.test.web;
 
+import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.DisabledByIssue;
@@ -35,7 +36,7 @@ public class SpendingWebTest {
         )
 )
   @Test
-  void categoryDescriptionShouldBeChangedFromTable(SpendJson spend) {
+  void categoryDescriptionShouldBeChangedFromTable2(SpendJson spend) {
     final String newDescription = "Обучение Niffler Next Generation";
 
     Selenide.open(CFG.frontUrl(), LoginPage.class)
@@ -140,6 +141,28 @@ public class SpendingWebTest {
             .checkThatSuccessMessageBlockHasText("Category " + category.name() +" is unarchived")
             .clickShowArchivedCheckbox()
             .checkThatCategoryIsInTheList(category.name());
+  }
+
+  @User(
+          username = "duck",
+          spendings = @Spending(
+                  category = "Обучение",
+                  description = "Обучение Advanced 2.0",
+                  amount = 79990
+          )
+  )
+  @Test
+  void categoryDescriptionShouldBeChangedFromTable(SpendJson[] spends) {
+    Configuration.timeout = 10000;
+    SpendJson spend = spends[0];
+    final String newDescription = "Обучение Niffler Next Generation";
+
+    Selenide.open(CFG.frontUrl(), LoginPage.class)
+            .login("duck", "12345")
+            .editSpending(spend.description())
+            .setNewSpendingDescription(newDescription)
+            .save();
+    new MainPage().checkThatTableContainsSpending(newDescription);
   }
 
 }
