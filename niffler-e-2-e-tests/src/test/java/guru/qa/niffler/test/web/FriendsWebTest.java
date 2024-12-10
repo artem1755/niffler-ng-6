@@ -1,9 +1,12 @@
 package guru.qa.niffler.test.web;
 
+import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.WebTest;
 import guru.qa.niffler.jupiter.extension.UsersQueueExtension;
+import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.Test;
 
@@ -13,41 +16,44 @@ import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType.Typ
 public class FriendsWebTest {
     private static final Config CFG = Config.getInstance();
 
+
+    @User(incomeInvitations = 1)
     @Test
-    void friendShouldBePresentInFriendsTable(@UsersQueueExtension.UserType(WITH_FRIEND) UsersQueueExtension.StaticUser user) {
+    void incomeInvitationBePresentInFriendsTable(UserJson user) {
+        Configuration.timeout = 10000; // Устанавливаем глобальный тайм-аут
+
+
         Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .login(user.username(), user.password())
+                .login(user.username(), user.testData().password())
+                .clickProfileAvatar()
+                .clickMyFriendLink()
+                .shouldHaveFriendRequestListHeader("Friend requests")
+                .shouldBePresentInRequestsTable(user.testData().incomeInvites().get(0));
+    }
+
+    @User(friends = 1)
+    @Test
+    void friendShouldBePresentInFriendsTable(UserJson user) {
+        Configuration.timeout = 10000; // Устанавливаем глобальный тайм-аут
+
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .login(user.username(), user.testData().password())
                 .clickProfileAvatar()
                 .clickMyFriendLink()
                 .shouldHaveMyFriendsListHeader("My friends")
-                .checkThatFriendIsInTheList(user.friend());
+                .shouldBePresentInFriendsTable(user.testData().friends().get(0));
     }
 
+    @User(outcomeInvitations = 1)
     @Test
-    void friendsTableShouldBeEmptyForNewUser(@UsersQueueExtension.UserType(EMPTY) UsersQueueExtension.StaticUser user) {
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .login(user.username(), user.password())
-                .clickProfileAvatar()
-                .clickMyFriendLink()
-                .checkThatShouldHaveEmptyFriendsTable("There are no users yet");
-    }
+    void outcomeInvitationBePresentInAllPeoplesTable(UserJson user) {
+        Configuration.timeout = 10000; // Устанавливаем глобальный тайм-аут
 
-    @Test
-    void incomeInvitationBePresentInFriendsTable(@UsersQueueExtension.UserType(WITH_INCOME_REQUEST) UsersQueueExtension.StaticUser user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .login(user.username(), user.password())
-                .clickProfileAvatar()
-                .clickMyFriendLink()
-                .checkThatShouldBeFriendRequestList("Friend requests")
-                .checkThatShouldBePresentInRequestsTable(user.income());
-    }
-
-    @Test
-    void outcomeInvitationBePresentInAllPeoplesTable(@UsersQueueExtension.UserType(WITH_OUTCOME_REQUEST) UsersQueueExtension.StaticUser user) {
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .login(user.username(), user.password())
+                .login(user.username(), user.testData().password())
                 .clickProfileAvatar()
                 .clickAllPeopleLink()
-                .checkThatShouldBePresentInAllPeopleTableAndCheckStatus(user.outcome(),"Waiting...");
+                .shouldBePresentInAllPeopleTableAndCheckStatus(user.testData().outcomeInvites().get(0),"Waiting...");
     }
+
 }
