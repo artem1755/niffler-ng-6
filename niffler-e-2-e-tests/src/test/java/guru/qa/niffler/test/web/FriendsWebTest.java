@@ -56,4 +56,31 @@ public class FriendsWebTest {
                 .shouldBePresentInAllPeopleTableAndCheckStatus(user.testData().outcomeInvites().get(0),"Waiting...");
     }
 
+    @User(
+            incomeInvitations = 1
+    )
+    @Test
+    void acceptInvitation(UserJson user) {
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .login(user.username(), user.testData().password())
+                .clickProfileAvatar()
+                .clickMyFriendLink()
+                .acceptFriend()
+                .shouldHaveMyFriendsListHeader("My friends")
+                .checkUnfriendButtonIsVisible();
+    }
+
+    @User(
+            incomeInvitations = 1
+    )
+    @Test
+    void declineInvitation(UserJson user) {
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .login(user.username(), user.testData().password())
+                .clickProfileAvatar()
+                .clickMyFriendLink()
+                .declineFriend()
+                .checkThatShouldHaveEmptyFriendsTable("There are no users yet");
+    }
+
 }

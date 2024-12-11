@@ -5,17 +5,21 @@ import guru.qa.niffler.api.UserApi;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.utils.RandomDataUtils;
+import io.qameta.allure.Step;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
+@ParametersAreNonnullByDefault
 public class UserApiClient  implements UsersClient{
 
     // Настройка Retrofit для User API
@@ -33,7 +37,8 @@ public class UserApiClient  implements UsersClient{
     private final AuthApi authApi = authRetrofit.create(AuthApi.class);
 
     @Override
-    public UserJson createUser(String username, String password)  {
+    @Step("Создание нового пользователя: {username}")
+    public @Nonnull UserJson createUser(@Nonnull String username, @Nonnull String password)  {
         // Шаг 1: Запрос формы регистрации для получения CSRF токена
         final Response<Void> formResponse;
         try {
@@ -92,7 +97,8 @@ public class UserApiClient  implements UsersClient{
     }
 
     @Override
-    public List<String> createIncomeInvitations(UserJson targetUser, int count) {
+    @Step("Создание {count} входящих приглашений пользователю: {targetUser.username}")
+    public @Nonnull List<String> createIncomeInvitations(@Nonnull UserJson targetUser, int count) {
         List<String> incomeUsers = new ArrayList<>();
 
         if (count > 0) {
@@ -122,7 +128,8 @@ public class UserApiClient  implements UsersClient{
 
 
     @Override
-    public List<String> createOutcomeInvitations(UserJson targetUser, int count) {
+    @Step("Создание {count} исходящих приглашений пользователю: {targetUser.username}")
+    public @Nonnull List<String> createOutcomeInvitations(@Nonnull UserJson targetUser, int count) {
         List<String> outcomeUsers = new ArrayList<>();
 
         if (count > 0) {
@@ -154,7 +161,8 @@ public class UserApiClient  implements UsersClient{
 
 
     @Override
-    public List<String> createFriends(UserJson targetUser, int count) {
+    @Step("Добавление {count} друзей пользователю: {targetUser.username}")
+    public @Nonnull List<String> createFriends(@Nonnull UserJson targetUser, int count) {
         List<String> friends = new ArrayList<>();
 
         if (count > 0) {
@@ -185,7 +193,8 @@ public class UserApiClient  implements UsersClient{
     }
 
 
-    public UserJson sendInvitation(String username, String targetUsername) {
+    @Step("Отправка приглашения от пользователя {username} пользователю {targetUsername}")
+    public @Nullable UserJson sendInvitation(@Nonnull String username,@Nonnull String targetUsername) {
         final Response<UserJson> response;
         try {
             response = userApi.sendInvitation(username, targetUsername)
@@ -197,7 +206,8 @@ public class UserApiClient  implements UsersClient{
         return response.body();
     }
 
-    public UserJson acceptInvitation(String username, String targetUsername) {
+    @Step("Принятие приглашения от пользователя {username} пользователю {targetUsername}")
+    public @Nullable UserJson acceptInvitation(@Nonnull String username,@Nonnull String targetUsername) {
         final Response<UserJson> response;
         try {
             response = userApi.acceptInvitation(username, targetUsername)

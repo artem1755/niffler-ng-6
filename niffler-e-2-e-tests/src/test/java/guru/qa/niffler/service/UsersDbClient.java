@@ -13,14 +13,18 @@ import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.utils.RandomDataUtils;
+import io.qameta.allure.Step;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 
+@ParametersAreNonnullByDefault
 public class UsersDbClient implements UsersClient{
 
     private static final Config CFG = Config.getInstance();
@@ -34,6 +38,10 @@ public class UsersDbClient implements UsersClient{
             CFG.userdataJdbcUrl()
     );
 
+
+    @Nonnull
+    @Override
+    @Step("Создание нового пользователя: {username}")
     public UserJson createUser(String username, String password) {
         return xaTransactionTemplate.execute(() -> {
             AuthUserEntity authUser = authUserEntity(username, password);
@@ -45,7 +53,9 @@ public class UsersDbClient implements UsersClient{
         });
     }
 
+    @Nonnull
     @Override
+    @Step("Добавление {count} входящих приглашений пользователю: {targetUser.username}")
     public List<String> createIncomeInvitations(UserJson targetUser, int count) {
         List<String> incomes = new ArrayList<>();
         if (count > 0) {
@@ -66,7 +76,9 @@ public class UsersDbClient implements UsersClient{
         return incomes;
     }
 
+    @Nonnull
     @Override
+    @Step("Добавление {count} исходящих приглашений пользователю: {targetUser.username}")
     public List<String> createOutcomeInvitations(UserJson targetUser, int count) {
         List<String> outcomes = new ArrayList<>();
         if (count > 0) {
@@ -87,7 +99,9 @@ public class UsersDbClient implements UsersClient{
         return outcomes;
     }
 
+    @Nonnull
     @Override
+    @Step("Добавление {count} друзей пользователю: {targetUser.username}")
     public List<String> createFriends(UserJson targetUser, int count) {
         List<String> friends = new ArrayList<>();
         if (count > 0) {
@@ -109,6 +123,7 @@ public class UsersDbClient implements UsersClient{
     }
 
 
+    @Nonnull
     private UserEntity userEntity(String username) {
         UserEntity ue = new UserEntity();
         ue.setUsername(username);
@@ -116,6 +131,7 @@ public class UsersDbClient implements UsersClient{
         return ue;
     }
 
+    @Nonnull
     private AuthUserEntity authUserEntity(String username, String password) {
         AuthUserEntity authUser = new AuthUserEntity();
         authUser.setUsername(username);

@@ -64,7 +64,10 @@ public class CategoryExtension implements BeforeEachCallback, ParameterResolver 
     @Override
     @SuppressWarnings("unchecked")
     public CategoryJson[] resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-        return (CategoryJson[]) extensionContext.getStore(NAMESPACE).get(extensionContext.getUniqueId(), List.class)
-                .toArray();
+        List<CategoryJson> categories = extensionContext.getStore(NAMESPACE).get(extensionContext.getUniqueId(), List.class);
+        if (categories == null) {
+            throw new ParameterResolutionException("No categories found in the store");
+        }
+        return categories.toArray(new CategoryJson[0]); // Преобразование списка в массив типа CategoryJson[]
     }
 }
