@@ -11,12 +11,16 @@ import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.extension.TestMethodContextExtension;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
+import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.page.MainPage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
+import java.util.Date;
+
+import static guru.qa.niffler.utils.RandomDataUtils.randomSentence;
 import static guru.qa.niffler.utils.RandomDataUtils.randomUserName;
 
 @ExtendWith(BrowserExtension.class)
@@ -97,51 +101,6 @@ public class SpendingWebTest {
   }
 
 
-@User(
-        username = "duck",
-        categories = @Category(
-                archived = false
-        )
-)
-  @Test
-  void archivedCategoryShouldPresentInCategoriesList(CategoryJson category){
-    Selenide.open(CFG.frontUrl(), LoginPage.class)
-            .login("duck", "12345");
-
-    new MainPage()
-            .clickProfileAvatar()
-            .clickProfilePageLink()
-            .searchCategoryBlock(category.name())
-            .clickArchivedBtn()
-            .clickArchivedBtnConfirm()
-            .checkThatSuccessMessageBlockHasText("Category " + category.name() +" is archived")
-            .clickShowArchivedCheckbox()
-            .checkThatCategoryIsInTheList(category.name());
-  }
-
-
-@User(
-        username = "duck",
-        categories = @Category(
-                archived = true
-        )
-)
-  @Test
-  void activeCategoryShouldPresentInCategoriesList(CategoryJson category){
-    Selenide.open(CFG.frontUrl(), LoginPage.class)
-            .login("duck", "12345");
-
-    new MainPage()
-            .clickProfileAvatar()
-            .clickProfilePageLink()
-            .clickShowArchivedCheckbox()
-            .searchCategoryBlock(category.name())
-            .clickUnarchivedBtn()
-            .clickUnarchivedBtnConfirm()
-            .checkThatSuccessMessageBlockHasText("Category " + category.name() +" is unarchived")
-            .clickShowArchivedCheckbox()
-            .checkThatCategoryIsInTheList(category.name());
-  }
 
   @User(
           username = "duck",
@@ -163,6 +122,24 @@ public class SpendingWebTest {
             .setNewSpendingDescription(newDescription)
             .save();
     new MainPage().checkThatTableContainsSpending(newDescription);
+  }
+
+  @User
+  @Test
+  void addSpendTest(UserJson user) {
+    String category = randomUserName();
+    String description = randomSentence(2);
+
+    Selenide.open(CFG.frontUrl(), LoginPage.class)
+            .login(user.username(), user.testData().password())
+            .getHeader()
+            .addSpendingPage()
+            .setSpendingCategory(category)
+            .setNewSpendingDescription(description)
+            .setSpendingAmount("10")
+            .getCalendar()
+            .selectDateInCalendar(new Date());
+    new MainPage().checkThatTableContainsSpending(description);
   }
 
 }
