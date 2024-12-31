@@ -4,15 +4,22 @@ import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.*;
 import io.qameta.allure.Step;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 
-public class Header {
-    private final SelenideElement self = $("div#root header");
+@ParametersAreNonnullByDefault
+public class Header<T extends BasePage<?>> extends BaseComponent<T> {
     private final SelenideElement menu = $("ul[role='menu']");
 
+    public Header(SelenideElement header, T page) {
+        super(header, page);
+    }
 
+    @Nonnull
     @Step("Перейти на \"Friends\" страницу")
     public FriendsPage toFriendsPage() {
         self.$("button").click();
@@ -20,6 +27,7 @@ public class Header {
         return new FriendsPage();
     }
 
+    @Nonnull
     @Step("Перейти на \"All People\" страницу")
     public FriendsPage toAllPeoplesPage() {
         self.$("button").click();
@@ -27,6 +35,7 @@ public class Header {
         return new FriendsPage();
     }
 
+    @Nonnull
     @Step("Перейти на страницу профиля")
     public ProfilePage toProfilePage() {
         self.$("[aria-label='Menu']").click();
@@ -34,12 +43,14 @@ public class Header {
         return new ProfilePage();
     }
 
+    @Nonnull
     @Step("Перейти на главную страницу")
     public MainPage toMainPage() {
         self.$(".MuiToolbar-gutters").click();
         return new MainPage();
     }
 
+    @Nonnull
     @Step("Разлогинить пользователя")
     public LoginPage signOut() {
         self.$("[aria-label='Menu']").click();
@@ -47,9 +58,15 @@ public class Header {
         return new LoginPage();
     }
 
+    @Nonnull
     @Step("Добавить новую трату")
     public EditSpendingPage addSpendingPage() {
         self.$(byText("New spending")).click();
         return new EditSpendingPage();
+    }
+
+    @Step("Проверить заголовок в хедере")
+    public void checkHeaderText() {
+        self.$("h1").shouldHave(text("Niffler"));
     }
 }

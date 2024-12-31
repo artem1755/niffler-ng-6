@@ -1,9 +1,13 @@
 package guru.qa.niffler.test.web;
 
+import guru.qa.niffler.api.SpendApiClient;
+import guru.qa.niffler.api.UserApiClient;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
+import guru.qa.niffler.service.SpendClient;
 import guru.qa.niffler.service.SpendDbClient;
+import guru.qa.niffler.service.UsersClient;
 import guru.qa.niffler.service.UsersDbClient;
 import org.junit.jupiter.api.Test;
 
@@ -138,6 +142,25 @@ public class JdbcTestNew {
     void test11(){
         UsersDbClient usersDbClient = new UsersDbClient();
         usersDbClient.createUser("someuser3","31234114");
+    }
+
+    @Test
+    void test12(){
+        SpendClient spendClient = new SpendApiClient();
+        spendClient.createCategory(
+                new CategoryJson(
+                        null,
+                        "cats2",
+                        "duck",
+                        false
+                )
+        );
+    }
+
+    @Test
+    void test13(){
+        UsersClient usersClient = new UserApiClient();
+        usersClient.createUser("someuser4","31234114");
     }
 
 }

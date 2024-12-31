@@ -13,7 +13,6 @@ public interface AuthApi {
             @Field("username") String username,
             @Field("password") String password,
             @Field("passwordSubmit") String passwordSubmit,
-            @Field("_csrf") String csrf,
-            @Header("Cookie") String xsrfToken
+            @Field("_csrf") String csrf
     );
 }
