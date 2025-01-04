@@ -56,7 +56,4 @@ enum LocalConfig implements Config {
     return "https://api.github.com/";
   }
 
-
-
-
 }

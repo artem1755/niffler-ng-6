@@ -1,59 +1,57 @@
 package guru.qa.niffler.test.web;
 
-import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.WebTest;
-import guru.qa.niffler.jupiter.extension.UsersQueueExtension;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.Test;
-
-import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType.Type.*;
 
 @WebTest
 public class FriendsWebTest {
     private static final Config CFG = Config.getInstance();
 
+    @User(friends = 1)
+    @Test
+    void friendShouldBePresentInFriendsTable(UserJson user) {
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .login(user.username(), user.testData().password())
+                .getHeader()
+                .toFriendsPage()
+                .shouldHaveMyFriendsListHeader("My friends")
+                .shouldBePresentInFriendsTable(user.testData().friends().get(0));
+    }
+
+    @User
+    @Test
+    void friendsTableShouldBeEmptyForNewUser(UserJson user) {
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .login(user.username(), user.testData().password())
+                .getHeader()
+                .toFriendsPage()
+                .shouldHaveEmptyFriendsTable("There are no users yet");
+    }
 
     @User(incomeInvitations = 1)
     @Test
     void incomeInvitationBePresentInFriendsTable(UserJson user) {
-        Configuration.timeout = 10000; // Устанавливаем глобальный тайм-аут
-
-
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
-                .clickProfileAvatar()
-                .clickMyFriendLink()
-                .shouldHaveFriendRequestListHeader("Friend requests")
+                .getHeader()
+                .toFriendsPage()
+                .shouldFriendRequestList("Friend requests")
                 .shouldBePresentInRequestsTable(user.testData().incomeInvites().get(0));
-    }
-
-    @User(friends = 1)
-    @Test
-    void friendShouldBePresentInFriendsTable(UserJson user) {
-        Configuration.timeout = 10000; // Устанавливаем глобальный тайм-аут
-
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .login(user.username(), user.testData().password())
-                .clickProfileAvatar()
-                .clickMyFriendLink()
-                .shouldHaveMyFriendsListHeader("My friends")
-                .shouldBePresentInFriendsTable(user.testData().friends().get(0));
     }
 
     @User(outcomeInvitations = 1)
     @Test
     void outcomeInvitationBePresentInAllPeoplesTable(UserJson user) {
-        Configuration.timeout = 10000; // Устанавливаем глобальный тайм-аут
-
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
-                .clickProfileAvatar()
-                .clickAllPeopleLink()
-                .shouldBePresentInAllPeopleTableAndCheckStatus(user.testData().outcomeInvites().get(0),"Waiting...");
+                .getHeader()
+                .toAllPeoplesPage()
+                .shouldBePresentInAllPeopleTableAndCheckStatus(user.testData().outcomeInvites().get(0), "Waiting...");
     }
 
     @User(
@@ -63,8 +61,8 @@ public class FriendsWebTest {
     void acceptInvitation(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
-                .clickProfileAvatar()
-                .clickMyFriendLink()
+                .getHeader()
+                .toFriendsPage()
                 .acceptFriend()
                 .shouldHaveMyFriendsListHeader("My friends")
                 .checkUnfriendButtonIsVisible();
@@ -77,10 +75,9 @@ public class FriendsWebTest {
     void declineInvitation(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
-                .clickProfileAvatar()
-                .clickMyFriendLink()
+                .getHeader()
+                .toFriendsPage()
                 .declineFriend()
-                .checkThatShouldHaveEmptyFriendsTable("There are no users yet");
+                .shouldHaveEmptyFriendsTable("There are no users yet");
     }
-
 }

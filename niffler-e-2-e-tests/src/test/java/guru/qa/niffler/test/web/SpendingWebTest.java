@@ -14,6 +14,7 @@ import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.page.MainPage;
+import guru.qa.niffler.utils.RandomDataUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -34,14 +35,15 @@ public class SpendingWebTest {
                 archived = false
         ),
         spendings = @Spending(
-                category = "Обучение2",
+                category = "Обучение31",
                 description = "Обучение Advanced 2.0",
                 amount = 79990
         )
 )
   @Test
-  void categoryDescriptionShouldBeChangedFromTable2(SpendJson spend) {
-    final String newDescription = "Обучение Niffler Next Generation";
+  void categoryDescriptionShouldBeChanged(SpendJson[] spends) {
+  SpendJson spend = spends[0];
+    final String newDescription = "Обучение Niffler Next Generation5";
 
     Selenide.open(CFG.frontUrl(), LoginPage.class)
         .login("duck", "12345")
@@ -83,6 +85,7 @@ public class SpendingWebTest {
             .checkThatFormContainsErrorMessage(errorMassage);
   }
 
+
   @Test
   void mainPageShouldBeDisplaydAfterSuccessLogin(){
     final String h2 = "History of Spendings";
@@ -99,8 +102,6 @@ public class SpendingWebTest {
 
     new LoginPage().checkIsStillOnLoginPage();
   }
-
-
 
   @User(
           username = "duck",
@@ -139,6 +140,25 @@ public class SpendingWebTest {
             .setSpendingAmount("10")
             .getCalendar()
             .selectDateInCalendar(new Date());
+    new MainPage().checkThatTableContainsSpending(description);
+  }
+
+  @User
+  @Test
+  void addSpendAndCheckAlertTest(UserJson user) {
+    String category = RandomDataUtils.randomCategory();
+    String description = randomSentence(2);
+
+    Selenide.open(CFG.frontUrl(), LoginPage.class)
+            .login(user.username(), user.testData().password())
+            .getHeader()
+            .addSpendingPage()
+            .setSpendingCategory(category)
+            .setNewSpendingDescription(description)
+            .setSpendingAmount("10")
+            .getCalendar()
+            .selectDateInCalendar(new Date())
+            .checkAlert("New spending is successfully created");
     new MainPage().checkThatTableContainsSpending(description);
   }
 

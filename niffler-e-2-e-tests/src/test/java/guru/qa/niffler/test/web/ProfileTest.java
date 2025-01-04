@@ -28,12 +28,10 @@ public class ProfileTest {
                 .getHeader()
                 .toProfilePage()
                 .clickArchiveButtonForCategoryName(category.name())
-                .clickArchivedBtnConfirm()
+                .clickArchiveButtonSubmit()
                 .shouldBeVisibleArchiveSuccessMessage(category.name())
                 .shouldNotVisibleArchiveCategory(category.name());
     }
-
-
 
     @User(
             username = "duck",
@@ -50,16 +48,15 @@ public class ProfileTest {
                 .toProfilePage()
                 .clickShowArchiveCategoryButton()
                 .clickUnarchiveButtonForCategoryName(category.name())
-                .clickUnarchivedBtnConfirm()
+                .clickUnarchiveButtonSubmit()
                 .shouldBeVisibleUnarchiveSuccessMessage(category.name())
                 .clickShowArchiveCategoryButton()
                 .shouldVisibleActiveCategory(category.name());
     }
 
-
     @User
     @Test
-    void changeName(UserJson user) {
+    void changeNameAndCheckAlertTest(UserJson user) {
         String name = randomName();
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
@@ -67,7 +64,7 @@ public class ProfileTest {
                 .toProfilePage()
                 .setName(name)
                 .clickSaveButton()
-                .shouldBeVisibleSaveChangesSuccessMessage()
+                .checkAlert("Profile successfully updated")
                 .checkName(name);
     }
 }
