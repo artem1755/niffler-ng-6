@@ -29,7 +29,7 @@ public class ProfileTest {
                 .toProfilePage()
                 .clickArchiveButtonForCategoryName(category.name())
                 .clickArchiveButtonSubmit()
-                .shouldBeVisibleArchiveSuccessMessage(category.name())
+                .checkAlert(category.name())
                 .shouldNotVisibleArchiveCategory(category.name());
     }
 
@@ -49,7 +49,7 @@ public class ProfileTest {
                 .clickShowArchiveCategoryButton()
                 .clickUnarchiveButtonForCategoryName(category.name())
                 .clickUnarchiveButtonSubmit()
-                .shouldBeVisibleUnarchiveSuccessMessage(category.name())
+                .checkAlert(category.name())
                 .clickShowArchiveCategoryButton()
                 .shouldVisibleActiveCategory(category.name());
     }

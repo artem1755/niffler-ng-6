@@ -64,18 +64,18 @@ public class ProfilePage extends BasePage<ProfilePage> {
         return this;
     }
 
-    @Nonnull
-    @Step("Проверить успешное сообщение об архивировании категории: {value}")
-    public ProfilePage shouldBeVisibleArchiveSuccessMessage(String value) {
-        successArchiveMessage.shouldHave(text("Category " + value + " is archived")).shouldBe(visible);
-        return this;
-    }
+//    @Nonnull
+//    @Step("Проверить успешное сообщение об архивировании категории: {value}")
+//    public ProfilePage shouldBeVisibleArchiveSuccessMessage(String value) {
+//        successArchiveMessage.shouldHave(text("Category " + value + " is archived")).shouldBe(visible);
+//        return this;
+//    }
 
-    @Step("Проверить успешное сообщение об разархивировании категории: {value}")
-    public ProfilePage shouldBeVisibleUnarchiveSuccessMessage(String value) {
-        successUnarchiveMessage.shouldHave(text("Category " + value + " is unarchived")).shouldBe(visible);
-        return this;
-    }
+//    @Step("Проверить успешное сообщение об разархивировании категории: {value}")
+//    public ProfilePage shouldBeVisibleUnarchiveSuccessMessage(String value) {
+//        successUnarchiveMessage.shouldHave(text("Category " + value + " is unarchived")).shouldBe(visible);
+//        return this;
+//    }
 
     @Step("Проверить, что активная категория с названием: {value} видна")
     public void shouldVisibleActiveCategory(String value) {

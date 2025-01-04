@@ -21,7 +21,7 @@ public class SearchField<T extends BasePage<?>> extends BaseComponent<T> {
 
     @Step("Очистить строку поиска, если она не пустая")
     public SearchField<T> clearIfNotEmpty() {
-        if (!self.shouldBe(empty).exists()) {
+        if(self.exists() && !self.text().isEmpty()) {
             self.clear();
         }
         return this;
