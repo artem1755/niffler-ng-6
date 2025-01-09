@@ -25,6 +25,7 @@ public class LoginPage extends BasePage<LoginPage> {
   private final SelenideElement formError = $(".form__error");
   private final SelenideElement createNewAccBtn = $(".form__register");
 
+  public static final String URL = CFG.authUrl() + "login";
 
   @Nonnull
   @Step("Ввести имя пользователя: {username}")
