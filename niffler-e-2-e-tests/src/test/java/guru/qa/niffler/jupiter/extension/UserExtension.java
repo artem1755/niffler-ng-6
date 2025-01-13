@@ -18,7 +18,6 @@ public class UserExtension implements BeforeEachCallback, ParameterResolver {
     public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(UserExtension.class);
     private static final String defaultPassword = "12345";
 
-//    private final UsersClient usersClient = new UsersDbClient();
     private final UsersClient usersClient = new UserApiClient();
 
     @Override
@@ -28,34 +27,21 @@ public class UserExtension implements BeforeEachCallback, ParameterResolver {
                     if ("".equals(userAnno.username())) {
                         final String username = RandomDataUtils.randomUserName();
                         UserJson testUser = usersClient.createUser(username, defaultPassword);
-                        // Добавление друзей и приглашений с проверкой на количество
-                        List<String> friends = new ArrayList<>();
-                        List<String> incomeInvites = new ArrayList<>();
-                        List<String> outcomeInvites = new ArrayList<>();
-
-                        if (userAnno.friends() > 0) {
-                            friends = usersClient.createFriends(testUser, userAnno.friends());
-                        }
+                        // Добавляем входящие приглашения, если их количество больше 0
                         if (userAnno.incomeInvitations() > 0) {
-                            incomeInvites = usersClient.createIncomeInvitations(testUser, userAnno.incomeInvitations());
+                            usersClient.createIncomeInvitations(testUser, userAnno.incomeInvitations());
                         }
+                        // Добавляем исходящие приглашения, если их количество больше 0
                         if (userAnno.outcomeInvitations() > 0) {
-                            outcomeInvites = usersClient.createOutcomeInvitations(testUser, userAnno.outcomeInvitations());
+                            usersClient.createOutcomeInvitations(testUser, userAnno.outcomeInvitations());
                         }
-
-                        // Сохранение пользователя и данных в контексте
+                        // Добавляем друзей, если их количество больше 0
+                        if (userAnno.friends() > 0) {
+                            usersClient.createFriends(testUser, userAnno.friends());
+                        }
                         context.getStore(NAMESPACE).put(
                                 context.getUniqueId(),
-                                testUser.addTestData(
-                                        new TestData(
-                                                defaultPassword,
-                                                new ArrayList<>(), // Пустой список для категорий
-                                                new ArrayList<>(), // Пустой список для трат
-                                                friends,           // Список друзей
-                                                incomeInvites,     // Список входящих приглашений
-                                                outcomeInvites     // Список исходящих приглашений
-                                        )
-                                )
+                                testUser
                         );
                     }
                 });

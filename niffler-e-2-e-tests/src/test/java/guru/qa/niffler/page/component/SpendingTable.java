@@ -2,6 +2,7 @@ package guru.qa.niffler.page.component;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.page.BasePage;
 import guru.qa.niffler.page.EditSpendingPage;
 import guru.qa.niffler.page.MainPage;
@@ -17,6 +18,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
+import static guru.qa.niffler.condition.SpendConditions.spends;
 
 public class SpendingTable<T extends BasePage<?>> extends BaseComponent<T> {
 
@@ -72,6 +74,13 @@ public class SpendingTable<T extends BasePage<?>> extends BaseComponent<T> {
     @Step("Проверка, что количество трат равно: {expectedSize}")
     public SpendingTable<T> checkTableSize(int expectedSize) {
         self.$(spendingRow).$$("tr").shouldHave(size(expectedSize));
+        return this;
+    }
+
+    @Step("Проверка, содержит ли таблица расходов расходы {expectedSpends}")
+    @Nonnull
+    public SpendingTable checkSpendingTable(SpendJson... expectedSpends) {
+        tableRows.should(spends(expectedSpends));
         return this;
     }
 }

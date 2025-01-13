@@ -1,5 +1,6 @@
 package guru.qa.niffler.jupiter.extension;
 
+import guru.qa.niffler.api.SpendApiClient;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.CategoryJson;
@@ -16,7 +17,7 @@ import java.util.List;
 public class CategoryExtension implements BeforeEachCallback, ParameterResolver {
     public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(CategoryExtension.class);
 
-    private final SpendClient spendClient = new SpendDbClient();
+    private final SpendClient spendClient = new SpendApiClient();
 
     @Override
     public void beforeEach(ExtensionContext context) throws Exception {
@@ -24,7 +25,6 @@ public class CategoryExtension implements BeforeEachCallback, ParameterResolver 
                 .ifPresent(userAnno -> {
                     if (ArrayUtils.isNotEmpty(userAnno.categories())) {
                         List<CategoryJson> result = new ArrayList<>();
-
                         UserJson user = context.getStore(UserExtension.NAMESPACE)
                                 .get(context.getUniqueId(), UserJson.class);
 
@@ -43,6 +43,7 @@ public class CategoryExtension implements BeforeEachCallback, ParameterResolver 
                             CategoryJson createdCategory = spendClient.createCategory(category);
                             result.add(createdCategory);
                         }
+
 
                         if (user != null) {
                             user.testData().categories().addAll(result);

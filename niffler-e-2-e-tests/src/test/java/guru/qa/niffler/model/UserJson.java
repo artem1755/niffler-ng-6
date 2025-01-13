@@ -7,6 +7,7 @@ import guru.qa.niffler.data.entity.userdata.UserEntity;
 import jaxb.userdata.FriendState;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
@@ -33,6 +34,18 @@ public record UserJson(
         @JsonIgnore
         TestData testData) {
 
+    public UserJson(@Nonnull String username) {
+        this(username, null);
+    }
+
+    public UserJson(@Nonnull String username, @Nullable TestData testData) {
+        this(null, username, null, null, null, null, null, null, null, testData);
+    }
+
+    public UserJson addTestData(@Nonnull TestData testData) {
+        return new UserJson(id, username, fullname, firstname, surname, currency, photo, photoSmall, friendState, testData);
+    }
+
     public static @Nonnull UserJson fromEntity(@Nonnull UserEntity entity, FriendState friendState) {
         return new UserJson(
                 entity.getId(),
@@ -45,12 +58,6 @@ public record UserJson(
                 entity.getPhotoSmall() != null && entity.getPhotoSmall().length > 0 ? new String(entity.getPhotoSmall(), StandardCharsets.UTF_8) : null,
                 friendState,
                 null
-        );
-    }
-
-    public UserJson addTestData(TestData testData) {
-        return new UserJson(
-                id, username, firstname, surname, fullname, currency, photo, photoSmall, friendState, testData
         );
     }
 }
