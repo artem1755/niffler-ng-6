@@ -11,6 +11,7 @@ import guru.qa.niffler.data.repository.impl.AuthUserRepositoryHibernate;
 import guru.qa.niffler.data.repository.impl.UserdataUserRepositoryHibernate;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.CurrencyValues;
+import guru.qa.niffler.model.TestData;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.utils.RandomDataUtils;
 import io.qameta.allure.Step;
@@ -22,6 +23,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static java.util.Objects.requireNonNull;
 
 
 @ParametersAreNonnullByDefault
@@ -43,14 +46,18 @@ public class UsersDbClient implements UsersClient{
     @Override
     @Step("Создание нового пользователя: {username}")
     public UserJson createUser(String username, String password) {
-        return xaTransactionTemplate.execute(() -> {
+        return requireNonNull(xaTransactionTemplate.execute(() -> {
             AuthUserEntity authUser = authUserEntity(username, password);
             authUserRepository.create(authUser);
             return UserJson.fromEntity(
                     userdataUserRepository.create(userEntity(username)),
                     null
+            ).addTestData(
+                    new TestData(
+                            password
+                    )
             );
-        });
+        }));
     }
 
     @Nonnull

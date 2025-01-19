@@ -3,6 +3,7 @@ package guru.qa.niffler.api;
 import com.google.common.base.Stopwatch;
 import guru.qa.niffler.api.core.RestClient;
 import guru.qa.niffler.api.core.ThreadSafeCookieStore;
+import guru.qa.niffler.model.TestData;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.UsersClient;
 import guru.qa.niffler.utils.RandomDataUtils;
@@ -49,9 +50,13 @@ public class UserApiClient extends RestClient implements UsersClient {
 
         while (sw.elapsed(TimeUnit.MILLISECONDS) < maxWaitTime) {
             try {
-                UserJson userJson = userApi.getCurrentUser(username).execute().body();
-                if (userJson != null && userJson.id() != null) {
-                    return userJson; // Пользователь найден, возвращаем
+                UserJson createdUser = userApi.getCurrentUser(username).execute().body();
+                if (createdUser != null && createdUser.id() != null) {
+                    return createdUser.addTestData(
+                            new TestData(
+                                    password
+                            )
+                    ); // Пользователь найден, возвращаем
                 } else {
                     Thread.sleep(100); // Ожидание перед следующей проверкой
                 }
@@ -95,6 +100,9 @@ public class UserApiClient extends RestClient implements UsersClient {
 
                 // Шаг 3: Отправка приглашения в друзья
                 sendInvitation(newUser.username(), user.username());
+                targetUser.testData()
+                        .incomeInvitations()
+                        .add(newUser);
 
                 incomeUsers.add(newUser.username());
             }
@@ -121,7 +129,9 @@ public class UserApiClient extends RestClient implements UsersClient {
 
                 // Шаг 3: Отправка приглашения в друзья
                 sendInvitation(user.username(), newUser.username());
-
+                targetUser.testData()
+                        .outcomeInvitations()
+                        .add(newUser);
                 // Добавляем созданного пользователя в список
                 outcomeUsers.add(newUser.username());
             }
@@ -148,7 +158,6 @@ public class UserApiClient extends RestClient implements UsersClient {
 
                 // Шаг 3: Принятие входящего приглашения в друзья
                 acceptInvitation(user.username(), incomeUsers.get(0));
-
                 // Добавляем созданного друга в список
                 friends.add(incomeUsers.get(0));
             }

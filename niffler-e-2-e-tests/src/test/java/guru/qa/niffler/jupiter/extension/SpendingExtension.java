@@ -1,5 +1,6 @@
 package guru.qa.niffler.jupiter.extension;
 
+import guru.qa.niffler.api.SpendApiClient;
 import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.CategoryJson;
@@ -20,7 +21,7 @@ public class SpendingExtension implements BeforeEachCallback, ParameterResolver 
 
     public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(SpendingExtension.class);
 
-    private final SpendClient spendClient = new SpendDbClient();
+    private final SpendClient spendClient = new SpendApiClient();
 
     @Override
     public void beforeEach(ExtensionContext context) throws Exception {
@@ -51,9 +52,8 @@ public class SpendingExtension implements BeforeEachCallback, ParameterResolver 
                             result.add(createdSpend);
                         }
 
-
                         if (user != null) {
-                            user.testData().spendings().addAll(result);
+                            user.testData().spends().addAll(result);
                         } else {
                             context.getStore(NAMESPACE).put(
                                     context.getUniqueId(),
@@ -70,12 +70,8 @@ public class SpendingExtension implements BeforeEachCallback, ParameterResolver 
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public SpendJson[] resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-        List<SpendJson> spendList = extensionContext.getStore(NAMESPACE).get(extensionContext.getUniqueId(), List.class);
-        if (spendList == null) {
-            return new SpendJson[0]; // Возвращаем пустой массив, если данных нет
-        }
-        return spendList.toArray(new SpendJson[0]); // Преобразование списка в массив типа SpendJson[]
+        return (SpendJson[]) extensionContext.getStore(NAMESPACE).get(extensionContext.getUniqueId(), List.class).toArray();
     }
-
 }

@@ -20,7 +20,8 @@ public class FriendsWebTest {
                 .getHeader()
                 .toFriendsPage()
                 .shouldHaveMyFriendsListHeader("My friends")
-                .shouldBePresentInFriendsTable(user.testData().friends().get(0));
+//                .shouldBePresentInFriendsTable(user.testData().friends().get(0));
+                .shouldBePresentInFriendsTable(user.testData().friendsUsernames()[0]);
     }
 
     @User
@@ -41,7 +42,7 @@ public class FriendsWebTest {
                 .getHeader()
                 .toFriendsPage()
                 .shouldFriendRequestList("Friend requests")
-                .shouldBePresentInRequestsTable(user.testData().incomeInvites().get(0));
+                .shouldBePresentInRequestsTable(user.testData().incomeInvitationsUsernames()[0]);
     }
 
     @User(outcomeInvitations = 1)
@@ -51,7 +52,7 @@ public class FriendsWebTest {
                 .login(user.username(), user.testData().password())
                 .getHeader()
                 .toAllPeoplesPage()
-                .shouldBePresentInAllPeopleTableAndCheckStatus(user.testData().outcomeInvites().get(0), "Waiting...");
+                .shouldBePresentInAllPeopleTableAndCheckStatus(user.testData().outcomeInvitationsUsernames()[0], "Waiting...");
     }
 
     @User(

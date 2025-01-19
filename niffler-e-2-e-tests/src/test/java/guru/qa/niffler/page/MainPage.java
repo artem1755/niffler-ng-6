@@ -5,6 +5,7 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.component.SearchField;
 import guru.qa.niffler.page.component.SpendingTable;
+import guru.qa.niffler.page.component.StatComponent;
 import guru.qa.niffler.utils.ScreenDiffResult;
 import io.qameta.allure.Step;
 import lombok.Getter;
@@ -34,11 +35,16 @@ public class MainPage extends BasePage<MainPage> {
   private final SelenideElement statisticCanvas = $("canvas[role='img']");
   private final SelenideElement popup = $("div[role='dialog']");
   private final SelenideElement deleteBtn = $("#delete");
+  private final SelenideElement stat = $("#stat");
 
   @Getter
   private final SpendingTable<MainPage> spendingTable = new SpendingTable<>($(".MuiTableContainer-root"), this);
   @Getter
   private final SearchField<MainPage> searchField = new SearchField<>(searchInput, this);
+  @Getter
+  private final StatComponent<MainPage> statComponent = new StatComponent<>(stat, this);
+
+
 
   @Nonnull
   @Step("Редактировать трату с описанием: {spendingDescription}")
