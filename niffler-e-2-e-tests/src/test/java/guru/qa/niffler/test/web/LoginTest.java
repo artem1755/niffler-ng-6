@@ -39,6 +39,7 @@ public class LoginTest {
                 .checkHistoryOfSpendingHeaderContainsText(HISTORY_OF_SPENDING_TEXT);
     }
 
+
     @Test
     void userShouldStayOnLoginPageAfterLoginWithBadCredentials() {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
