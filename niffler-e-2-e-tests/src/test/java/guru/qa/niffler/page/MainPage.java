@@ -23,7 +23,7 @@ public class MainPage extends BasePage<MainPage> {
   private final SelenideElement statisticsHeader = $x("//h2[text()='Statistics']");
   private final SelenideElement historyOfSpendingHeader = $x("//h2[text()='History of Spendings']");
   private final SelenideElement searchInput = $("input[type='text']");
-  private final SelenideElement headerPage = $("div#spendings h2");
+  private final SelenideElement historyOfSpendingsTitle = $("div#spendings h2");
   @Getter
   private final SpendingTable<MainPage> spendingTable = new SpendingTable<>($(".MuiTableContainer-root"), this);
   @Getter
@@ -59,6 +59,6 @@ public class MainPage extends BasePage<MainPage> {
 
   @Step("Проверка отображения заголовка")
   public void checkThatHeaderContainsText(String headertext){
-    this.headerPage.shouldHave(text(headertext)).shouldBe(visible);
+    this.historyOfSpendingsTitle.shouldHave(text(headertext)).shouldBe(visible);
   }
 }
