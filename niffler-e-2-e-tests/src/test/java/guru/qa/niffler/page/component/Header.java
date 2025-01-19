@@ -1,7 +1,10 @@
 package guru.qa.niffler.page.component;
 
+import com.codeborne.selenide.SelenideConfig;
+import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.*;
+import guru.qa.niffler.utils.SelenideUtills;
 import io.qameta.allure.Step;
 
 import javax.annotation.Nonnull;
@@ -13,10 +16,12 @@ import static com.codeborne.selenide.Selenide.$;
 
 @ParametersAreNonnullByDefault
 public class Header<T extends BasePage<?>> extends BaseComponent<T> {
-    private final SelenideElement menu = $("ul[role='menu']");
+    private final SelenideElement menu;
+
 
     public Header(SelenideElement header, T page) {
         super(header, page);
+        menu= $("ul[role='menu']");
     }
 
     @Nonnull
@@ -49,14 +54,14 @@ public class Header<T extends BasePage<?>> extends BaseComponent<T> {
         self.$(".MuiToolbar-gutters").click();
         return new MainPage();
     }
-
-    @Nonnull
-    @Step("Разлогинить пользователя")
-    public LoginPage signOut() {
-        self.$("[aria-label='Menu']").click();
-        menu.$(byText("Sign out")).click();
-        return new LoginPage();
-    }
+//
+//    @Nonnull
+//    @Step("Разлогинить пользователя")
+//    public LoginPage signOut() {
+//        self.$("[aria-label='Menu']").click();
+//        menu.$(byText("Sign out")).click();
+//        return new LoginPage();
+//    }
 
     @Nonnull
     @Step("Добавить новую трату")

@@ -1,11 +1,12 @@
 package guru.qa.niffler.test.web;
 
-import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.SelenideDriver;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.WebTest;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.page.RegisterPage;
 import guru.qa.niffler.utils.RandomDataUtils;
+import guru.qa.niffler.utils.SelenideUtills;
 import org.junit.jupiter.api.Test;
 
 @WebTest
@@ -17,10 +18,11 @@ public class RegistrationTest {
     final String USERNAME_ALREADY_EXISTS_ERROR_TEXT = "Username `duck` already exists";
     final String PASSWORDS_NOT_EQUAL_ERROR_TEXT = "Passwords should be equal";
     String password = RandomDataUtils.randomPassword();
+    SelenideDriver driver = new SelenideDriver(SelenideUtills.chromeConfig);
 
     @Test
     void shouldRegisterNewUser() {
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        driver.open(CFG.frontUrl(), LoginPage.class)
                 .submitCreateNewAccount();
         registerPage.setUsername(RandomDataUtils.randomUserName())
                 .setPassword(password)
@@ -31,7 +33,7 @@ public class RegistrationTest {
 
     @Test
     void shouldNotRegisterUserWithExistingUsername() {
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        driver.open(CFG.frontUrl(), LoginPage.class)
                 .submitCreateNewAccount();
         registerPage.setUsername(REGISTERED_USER_NAME)
                 .setPassword(password)
@@ -44,7 +46,7 @@ public class RegistrationTest {
     void shouldShowErrorIfPasswordAndConfirmPasswordAreNotEqual() {
         String password = RandomDataUtils.randomPassword();
 
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        driver.open(CFG.frontUrl(), LoginPage.class)
                 .submitCreateNewAccount();
         registerPage.setUsername(RandomDataUtils.randomUserName())
                 .setPassword(password)
