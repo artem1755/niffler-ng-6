@@ -47,4 +47,13 @@ public class EditSpendingPage extends BasePage<EditSpendingPage> {
   public void save() {
     saveBtn.click();
   }
+
+  @Step("Установить новую сумму траты: {0}")
+  @Nonnull
+  public EditSpendingPage setNewSpendingAmount(double amount) {
+    String formattedAmount = amount % 1 == 0 ? String.format("%.0f", amount) : String.valueOf(amount);
+    amountInput.clear();
+    amountInput.setValue(formattedAmount);
+    return this;
+  }
 }

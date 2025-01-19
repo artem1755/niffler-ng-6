@@ -4,11 +4,11 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.jpa.EntityManagers;
 import guru.qa.niffler.data.tpl.Connections;
 import guru.qa.niffler.data.tpl.DataSources;
-import guru.qa.niffler.jupiter.SuitExtension;
+import guru.qa.niffler.jupiter.annotation.SuiteExtension;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-public class DatabasesExtension implements SuitExtension {
+public class DatabasesExtension implements SuiteExtension {
     private static final Config CFG = Config.getInstance();
     private final JdbcTemplate authJdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
     private final JdbcTemplate spendJdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.spendJdbcUrl()));

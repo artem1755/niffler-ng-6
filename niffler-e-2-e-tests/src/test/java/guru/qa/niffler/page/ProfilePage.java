@@ -1,15 +1,22 @@
 package guru.qa.niffler.page;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.utils.ScreenDiffResult;
 import io.qameta.allure.Step;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
+import javax.imageio.ImageIO;
+
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @ParametersAreNonnullByDefault
 public class ProfilePage extends BasePage<ProfilePage> {
@@ -21,6 +28,9 @@ public class ProfilePage extends BasePage<ProfilePage> {
     private final SelenideElement successUnarchiveMessage = $x("//div[contains(@class,'MuiTypography-root MuiTypography-body1')]");
     private final SelenideElement showArchiveCategoryButton = $x("//input[@type='checkbox']");
     private final SelenideElement nameInput = $("#name");
+    private final SelenideElement photoInput = $("input[type='file']");
+    private final SelenideElement avatar = $("#image__input").parent().$("img");
+    private final SelenideElement profileImage = $(".MuiAvatar-img");
 
 
     @Step("Архивировать категорию с названием: {categoryName}")
@@ -90,7 +100,31 @@ public class ProfilePage extends BasePage<ProfilePage> {
     }
 
     @Step("Проверить имя: {name}")
-    public void checkName(String name) {
+    public ProfilePage checkName(String name) {
         nameInput.shouldHave(value(name));
+        return this;
+    }
+
+    @Step("Загрузить фото из classpath")
+    @Nonnull
+    public ProfilePage uploadPhotoFromClasspath(String path) {
+        photoInput.uploadFromClasspath(path);
+        return this;
+    }
+
+    @Step("Проверка что фото существует")
+    @Nonnull
+    public ProfilePage checkPhotoExist() {
+        avatar.should(attributeMatching("src", "data:image.*"));
+        return this;
+    }
+
+    @Step("Проверка что картина профиля совпадает с ожидаемой")
+    @Nonnull
+    public ProfilePage checkProfileImage(BufferedImage expectedImage) throws IOException {
+        profileImage.shouldBe(visible);
+        BufferedImage actualImage = ImageIO.read(profileImage.screenshot());
+        assertFalse(new ScreenDiffResult(actualImage, expectedImage));
+        return this;
     }
 }

@@ -1,9 +1,9 @@
-package guru.qa.niffler.jupiter;
+package guru.qa.niffler.jupiter.annotation;
 
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-public interface SuitExtension extends BeforeAllCallback {
+public interface SuiteExtension extends BeforeAllCallback {
     @Override
     default void beforeAll(ExtensionContext context) throws Exception {
         final ExtensionContext rootContext = context.getRoot();
