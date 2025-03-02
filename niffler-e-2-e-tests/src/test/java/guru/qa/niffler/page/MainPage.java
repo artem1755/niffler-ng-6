@@ -36,6 +36,7 @@ public class MainPage extends BasePage<MainPage> {
   private final SelenideElement popup = $("div[role='dialog']");
   private final SelenideElement deleteBtn = $("#delete");
   private final SelenideElement stat = $("#stat");
+  private final SelenideElement errorContainer = $(".form__error");;
 
   @Getter
   private final SpendingTable<MainPage> spendingTable = new SpendingTable<>($(".MuiTableContainer-root"), this);
@@ -103,6 +104,13 @@ public class MainPage extends BasePage<MainPage> {
     row.$$("td").get(0).shouldBe(visible).click();
     deleteBtn.click();
     popup.$(byText("Delete")).click(usingJavaScript());
+  }
+
+  @Step("Проверка ошибки на странице: {error}")
+  @Nonnull
+  public void checkError(String error) {
+    errorContainer.shouldHave(text(error));
+//    return this;
   }
 
 
