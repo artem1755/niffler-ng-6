@@ -73,4 +73,8 @@ public abstract class RestClient {
                 .build();
     }
 
+    public <T> T create(final Class<T> service) {
+        return this.retrofit.create(service);
+    }
+
 }

@@ -58,4 +58,5 @@ public enum ThreadSafeCookieStore implements CookieStore{
                 .findFirst()
                 .orElseThrow();
     }
+
 }
